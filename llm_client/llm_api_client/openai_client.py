@@ -1,12 +1,11 @@
 from functools import lru_cache
 from typing import Optional
-
 import openai
 import tiktoken
 from tiktoken import Encoding
-
 from llm_client.llm_api_client.base_llm_api_client import BaseLLMAPIClient, LLMAPIClientConfig, ChatMessage
 from llm_client.consts import PROMPT_KEY
+import aiohttp
 
 INPUT_KEY = "input"
 MODEL_NAME_TO_TOKENS_PER_MESSAGE_AND_TOKENS_PER_NAME = {
@@ -16,7 +15,6 @@ MODEL_NAME_TO_TOKENS_PER_MESSAGE_AND_TOKENS_PER_NAME = {
     "gpt-4-32k-0314": (3, 1),
     "gpt-4-0613": (3, 1),
     "gpt-4-32k-0613": (3, 1),
-    # every message follows <|start|>{role/name}\n{content}<|end|>\n, if there's a name, the role is omitted
     "gpt-3.5-turbo-0301": (4, -1),
 }
 
@@ -25,8 +23,12 @@ class OpenAIClient(BaseLLMAPIClient):
     def __init__(self, config: LLMAPIClientConfig):
         super().__init__(config)
         openai.api_key = self._api_key
-        openai.aiosession.set(self._session)
         self._client = openai
+        self._session = aiohttp.ClientSession()
+
+    async def close(self):
+        """Close the aiohttp session"""
+        await self._session.close()
 
     async def text_completion(self, prompt: str, model: Optional[str] = None, temperature: float = 0,
                               max_tokens: int = 16, top_p: float = 1, **kwargs) -> list[str]:
@@ -35,7 +37,7 @@ class OpenAIClient(BaseLLMAPIClient):
         kwargs["top_p"] = top_p
         kwargs["temperature"] = temperature
         kwargs["max_tokens"] = max_tokens
-        completions = await self._client.Completion.acreate(headers=self._headers, **kwargs)
+        completions = await self._client.Completion.acreate(headers=self._headers, **kwargs, session=self._session)
         return [choice.text for choice in completions.choices]
 
     async def chat_completion(self, messages: list[ChatMessage], temperature: float = 0,
@@ -46,13 +48,13 @@ class OpenAIClient(BaseLLMAPIClient):
         kwargs["temperature"] = temperature
         kwargs["top_p"] = top_p
         kwargs["max_tokens"] = max_tokens
-        completions = await self._client.ChatCompletion.acreate(headers=self._headers, **kwargs)
+        completions = await self._client.ChatCompletion.acreate(headers=self._headers, **kwargs, session=self._session)
         return [choice.message.content for choice in completions.choices]
 
     async def embedding(self, text: str, model: Optional[str] = None, **kwargs) -> list[float]:
         self._set_model_in_kwargs(kwargs, model)
         kwargs[INPUT_KEY] = text
-        embeddings = await openai.Embedding.acreate(**kwargs)
+        embeddings = await openai.Embedding.acreate(**kwargs, session=self._session)
         return embeddings.data[0].embedding
 
     async def get_tokens_count(self, text: str, model: Optional[str] = None, **kwargs) -> int:
@@ -61,10 +63,6 @@ class OpenAIClient(BaseLLMAPIClient):
         return len(self._get_relevant_tokeniser(model).encode(text))
 
     async def get_chat_tokens_count(self, messages: list[ChatMessage], model: Optional[str] = None) -> int:
-        """
-        This is based on:
-        https://github.com/openai/openai-cookbook/blob/main/examples/How_to_count_tokens_with_tiktoken.ipynb
-        """
         model = self._get_model_name_for_tokeniser(model)
         encoding = self._get_relevant_tokeniser(model)
         tokens_per_message, tokens_per_name = MODEL_NAME_TO_TOKENS_PER_MESSAGE_AND_TOKENS_PER_NAME[model]
