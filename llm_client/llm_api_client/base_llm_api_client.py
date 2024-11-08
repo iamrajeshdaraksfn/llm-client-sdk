@@ -5,10 +5,10 @@ from typing import Any, Optional
 
 from dataclasses_json import dataclass_json, config
 
-try:
-    from aiohttp import ClientSession
-except ImportError:
-    ClientSession = Any
+# try:
+#     from aiohttp import ClientSession
+# except ImportError:
+#     ClientSession = Any
 
 from llm_client import BaseLLMClient
 from llm_client.consts import MODEL_KEY
@@ -32,7 +32,7 @@ class ChatMessage:
 @dataclass
 class LLMAPIClientConfig:
     api_key: str
-    session: ClientSession
+    # session: ClientSession
     base_url: Optional[str] = None
     default_model: Optional[str] = None
     headers: dict[str, Any] = field(default_factory=dict)
@@ -41,7 +41,7 @@ class LLMAPIClientConfig:
 class BaseLLMAPIClient(BaseLLMClient, ABC):
     def __init__(self, config: LLMAPIClientConfig):
         self._api_key: str = config.api_key
-        self._session: ClientSession = config.session
+        # self._session: ClientSession = config.session
         self._base_url: str = config.base_url
         self._default_model: str = config.default_model
         self._headers: dict[str, str] = config.headers

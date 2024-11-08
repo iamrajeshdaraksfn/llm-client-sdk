@@ -5,7 +5,7 @@ import tiktoken
 from tiktoken import Encoding
 from llm_client.llm_api_client.base_llm_api_client import BaseLLMAPIClient, LLMAPIClientConfig, ChatMessage
 from llm_client.consts import PROMPT_KEY
-import aiohttp
+# import aiohttp
 
 INPUT_KEY = "input"
 MODEL_NAME_TO_TOKENS_PER_MESSAGE_AND_TOKENS_PER_NAME = {
@@ -24,11 +24,11 @@ class OpenAIClient(BaseLLMAPIClient):
         super().__init__(config)
         openai.api_key = self._api_key
         self._client = openai
-        self._session = aiohttp.ClientSession()
+        # self._session = aiohttp.ClientSession()
 
     async def close(self):
         """Close the aiohttp session"""
-        await self._session.close()
+        # await self._session.close()
 
     async def text_completion(self, prompt: str, model: Optional[str] = None, temperature: float = 0,
                               max_tokens: int = 16, top_p: float = 1, **kwargs) -> list[str]:
@@ -40,16 +40,23 @@ class OpenAIClient(BaseLLMAPIClient):
         completions = await self._client.Completion.acreate(headers=self._headers, **kwargs, session=self._session)
         return [choice.text for choice in completions.choices]
 
-    async def chat_completion(self, messages: list[ChatMessage], temperature: float = 0,
+    def chat_completion(self, messages: list[ChatMessage], temperature: float = 0,
                               max_tokens: int = 16, top_p: float = 1, model: Optional[str] = None, **kwargs) \
             -> list[str]:
         self._set_model_in_kwargs(kwargs, model)
-        kwargs["messages"] = [message.to_dict() for message in messages]
-        kwargs["temperature"] = temperature
-        kwargs["top_p"] = top_p
-        kwargs["max_tokens"] = max_tokens
-        completions = await self._client.ChatCompletion.acreate(headers=self._headers, **kwargs, session=self._session)
-        return [choice.message.content for choice in completions.choices]
+        messages = [
+            message if isinstance(message, dict) else message.to_dict() 
+            for message in messages
+        ]
+
+        completions = self._client.chat.completions.create(
+                model=model,
+                messages=messages,
+                temperature=temperature,
+                max_tokens=max_tokens
+                )
+        return completions
+        # return [choice.message.content for choice in completions.choices]
 
     async def embedding(self, text: str, model: Optional[str] = None, **kwargs) -> list[float]:
         self._set_model_in_kwargs(kwargs, model)
