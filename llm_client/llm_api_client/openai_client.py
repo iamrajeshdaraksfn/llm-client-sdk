@@ -5,6 +5,7 @@ import tiktoken
 from tiktoken import Encoding
 from llm_client.llm_api_client.base_llm_api_client import BaseLLMAPIClient, LLMAPIClientConfig, ChatMessage
 from llm_client.consts import PROMPT_KEY
+from llm_client.llm_cost_calculation.openai_cost_calculation import openai_cost_calculation
 # import aiohttp
 
 INPUT_KEY = "input"
@@ -55,7 +56,12 @@ class OpenAIClient(BaseLLMAPIClient):
                 temperature=temperature,
                 max_tokens=max_tokens
                 )
-        return completions
+        token_consumption_dict = openai_cost_calculation(
+            completions.usage.prompt_tokens,
+            completions.usage.completion_tokens,
+            model=model,
+        )
+        return completions, token_consumption_dict
         # return [choice.message.content for choice in completions.choices]
 
     async def embedding(self, text: str, model: Optional[str] = None, **kwargs) -> list[float]:
