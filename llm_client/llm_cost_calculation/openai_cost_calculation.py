@@ -24,7 +24,7 @@ def openai_cost_calculation(
             - total_tokens: The total number of tokens.
             - total_Cost_usd: The total cost in USD.
     """
-    logger.info('started openai cost calculation..')
+    logger.info(f'started openai cost calculation with model: {model}')
 
     # pricing for 1k tokens
     pricing = {
@@ -35,6 +35,10 @@ def openai_cost_calculation(
         "gpt-3.5-turbo-16k": {
             "prompt": 0.003,
             "completion": 0.004,
+        },
+        "gpt-3.5-turbo": {
+            "prompt": 0.003,
+            "completion": 0.006,
         },
         "gpt-4-8k": {
             "prompt": 0.03,
@@ -61,7 +65,7 @@ def openai_cost_calculation(
     try:
         model_pricing = pricing[model]
     except KeyError:
-        raise ValueError("Invalid model specified")
+        raise ValueError(f"Invalid model specified: {model}")
 
     # Calculate costs
     prompt_cost = total_prompt_tokens * model_pricing["prompt"] / 1000
@@ -75,5 +79,5 @@ def openai_cost_calculation(
         "total_tokens": total_tokens,
         "total_Cost_usd": round(total_cost_usd, 4),
     }
-    logger.info('openai cost calculation done!')
+    logger.info(f'openai cost calculation done! total cost is: {token_consumption_dict}')
     return token_consumption_dict
