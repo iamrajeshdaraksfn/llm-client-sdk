@@ -1,3 +1,4 @@
+import time
 from functools import lru_cache
 from typing import Optional
 import openai
@@ -42,27 +43,53 @@ class OpenAIClient(BaseLLMAPIClient):
         return [choice.text for choice in completions.choices]
 
     def chat_completion(self, messages: list[ChatMessage], temperature: float = 0,
-                              max_tokens: int = 16, top_p: float = 1, model: Optional[str] = None, **kwargs) \
-            -> list[str]:
+                        max_tokens: int = 16, top_p: float = 1, model: Optional[str] = None, 
+                        retries: int = 3, retry_delay: float = 3.0, **kwargs) -> list[str]:
+        """
+        This method performs chat completion with OpenAI, and includes basic retry logic for handling
+        exceptions or empty responses.
+
+        :param retries: Number of retries in case of failure.
+        :param retry_delay: Delay in seconds between retries.
+        """
         self._set_model_in_kwargs(kwargs, model)
         messages = [
             message if isinstance(message, dict) else message.to_dict() 
             for message in messages
         ]
 
-        completions = self._client.chat.completions.create(
-                model=model,
-                messages=messages,
-                temperature=temperature,
-                max_tokens=max_tokens
+        attempt = 0
+        while attempt < retries:
+            try:
+                completions = self._client.chat.completions.create(
+                    model=model,
+                    messages=messages,
+                    temperature=temperature,
+                    max_tokens=max_tokens
                 )
-        token_consumption_dict = openai_cost_calculation(
-            completions.usage.prompt_tokens,
-            completions.usage.completion_tokens,
-            model=model,
-        )
-        return completions, token_consumption_dict
-        # return [choice.message.content for choice in completions.choices]
+                
+                # Check if response is empty
+                if not completions or not completions.choices:
+                    raise ValueError("Received empty response from the API")
+
+                # Calculate token consumption
+                token_consumption_dict = openai_cost_calculation(
+                    completions.usage.prompt_tokens,
+                    completions.usage.completion_tokens,
+                    model=model,
+                )
+                return completions, token_consumption_dict
+
+            except Exception as e:
+                attempt += 1
+                self.logger.error(f"Error in chat_completion (attempt {attempt}/{retries}): {e}")
+                
+                if attempt >= retries:
+                    self.logger.error("Max retries reached. Unable to complete request.")
+                    raise e  # Reraise the exception after max retries
+                
+                time.sleep(retry_delay)  # Wait before retrying
+
 
     async def embedding(self, text: str, model: Optional[str] = None, **kwargs) -> list[float]:
         self._set_model_in_kwargs(kwargs, model)
