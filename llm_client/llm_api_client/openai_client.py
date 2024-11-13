@@ -52,6 +52,7 @@ class OpenAIClient(BaseLLMAPIClient):
         :param retries: Number of retries in case of failure.
         :param retry_delay: Delay in seconds between retries.
         """
+        self.logger.info("Started running llm client sdk chat completion...")
         self._set_model_in_kwargs(kwargs, model)
         messages = [
             message if isinstance(message, dict) else message.to_dict() 
