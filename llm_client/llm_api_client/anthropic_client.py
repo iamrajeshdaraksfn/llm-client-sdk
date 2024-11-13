@@ -4,6 +4,7 @@ from anthropic import Anthropic
 
 from llm_client.llm_api_client.base_llm_api_client import BaseLLMAPIClient, LLMAPIClientConfig, ChatMessage, Role
 from llm_client.consts import PROMPT_KEY
+from llm_client.logging import setup_logger
 
 COMPLETE_PATH = "complete"
 BASE_URL = "https://api.anthropic.com/v1/"
@@ -25,6 +26,7 @@ class AnthropicClient(BaseLLMAPIClient):
         super().__init__(config)
         self._base_url = config.base_url or BASE_URL
         self._anthropic = Anthropic(api_key=config.api_key)
+        self.logger, _ = setup_logger(logger_name="OpenAIClient")
         self._headers = {
             VERSION_HEADER: self._anthropic.default_headers[VERSION_HEADER],
             ACCEPT_HEADER: ACCEPT_VALUE,

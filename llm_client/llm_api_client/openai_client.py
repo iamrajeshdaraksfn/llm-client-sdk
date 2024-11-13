@@ -8,6 +8,7 @@ from llm_client.llm_api_client.base_llm_api_client import BaseLLMAPIClient, LLMA
 from llm_client.consts import PROMPT_KEY
 from llm_client.llm_cost_calculation.openai_cost_calculation import openai_cost_calculation
 # import aiohttp
+from llm_client.logging import setup_logger
 
 INPUT_KEY = "input"
 MODEL_NAME_TO_TOKENS_PER_MESSAGE_AND_TOKENS_PER_NAME = {
@@ -26,6 +27,7 @@ class OpenAIClient(BaseLLMAPIClient):
         super().__init__(config)
         openai.api_key = self._api_key
         self._client = openai
+        self.logger, _ = setup_logger(logger_name="OpenAIClient")
         # self._session = aiohttp.ClientSession()
 
     async def close(self):
@@ -52,7 +54,6 @@ class OpenAIClient(BaseLLMAPIClient):
         :param retries: Number of retries in case of failure.
         :param retry_delay: Delay in seconds between retries.
         """
-        self.logger.info("Started running llm client sdk chat completion...")
         self._set_model_in_kwargs(kwargs, model)
         messages = [
             message if isinstance(message, dict) else message.to_dict() 
