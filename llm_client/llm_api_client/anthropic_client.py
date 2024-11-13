@@ -1,6 +1,6 @@
 from typing import Optional
-
-from anthropic import AsyncAnthropic
+import time
+from anthropic import Anthropic
 
 from llm_client.llm_api_client.base_llm_api_client import BaseLLMAPIClient, LLMAPIClientConfig, ChatMessage, Role
 from llm_client.consts import PROMPT_KEY
@@ -23,42 +23,98 @@ SYSTEM_END_PREFIX = "</admin>"
 class AnthropicClient(BaseLLMAPIClient):
     def __init__(self, config: LLMAPIClientConfig):
         super().__init__(config)
-        if self._base_url is None:
-            self._base_url = BASE_URL
-        self._anthropic = AsyncAnthropic()
-        if self._headers.get(VERSION_HEADER) is None:
-            self._headers[VERSION_HEADER] = self._anthropic.default_headers[VERSION_HEADER]
-        self._headers[ACCEPT_HEADER] = ACCEPT_VALUE
-        self._headers[AUTH_HEADER] = self._api_key
+        self._base_url = config.base_url or BASE_URL
+        self._anthropic = Anthropic(api_key=config.api_key)
+        self._headers = {
+            VERSION_HEADER: self._anthropic.default_headers[VERSION_HEADER],
+            ACCEPT_HEADER: ACCEPT_VALUE,
+            AUTH_HEADER: config.api_key,
+        }
 
-    async def chat_completion(self, messages: list[ChatMessage], model: Optional[str] = None,
-                              max_tokens: Optional[int] = None, temperature: float = 1, **kwargs) -> list[str]:
-        return await self.text_completion(self.messages_to_text(messages), model, max_tokens, temperature, **kwargs)
+    def chat_completion(self, messages: list[ChatMessage], model: Optional[str] = None,
+                    max_tokens: Optional[int] = None, temperature: float = 1.0, retries: int = 3,
+                    retry_delay: float = 3.0, **kwargs) -> list[str]:
+        """
+        This method performs chat completion with retry logic for handling exceptions or empty responses.
+        It also calculates token consumption based on the API response.
 
-    async def text_completion(self, prompt: str, model: Optional[str] = None, max_tokens: Optional[int] = None,
-                              temperature: float = 1, top_p: Optional[float] = None,
-                              **kwargs) -> \
-            list[str]:
+        :param messages: List of ChatMessage objects representing the conversation history.
+        :param model: Optional model name to be used.
+        :param max_tokens: Maximum number of tokens to generate in the response.
+        :param temperature: Controls the creativity of the response.
+        :param retries: Number of retries in case of failure.
+        :param retry_delay: Delay in seconds between retries.
+
+        :return: ChatCompletion object containing the generated text and other metadata,
+                or None if all retries fail.
+        """
+
+        self.logger.info("Started running llm client sdk chat completion...")
+        self._set_model_in_kwargs(kwargs, model)
+
+        prompt = self.messages_to_text(messages)
+
+        attempt = 0
+        while attempt < retries:
+            try:
+                completions = self.text_completion(
+                    prompt,
+                    model,
+                    max_tokens,
+                    temperature,
+                    **kwargs
+                )
+
+                # Check if response is empty
+                if not completions or not completions.choices:
+                    raise ValueError("Received empty response from the API")
+
+                # Calculate token consumption
+                tokens = self.get_chat_tokens_count(messages)
+                print('tokens here -------------------',tokens)
+                # token_consumption_dict = llm_cost_calculation(
+                #     completions.usage.prompt_tokens,
+                #     completions.usage.completion_tokens,
+                #     model=model,
+                # )
+
+                # return completions, token_consumption_dict
+                return completions
+
+            except Exception as e:
+                attempt += 1
+                self.logger.error(f"Error in chat_completion (attempt {attempt}/{retries}): {e}")
+
+                if attempt >= retries:
+                    self.logger.error("Max retries reached. Unable to complete request.")
+                    raise e  # Reraise the exception after max retries
+
+                time.sleep(retry_delay)  # Wait before retrying
+
+        # If all retries fail, return None
+        return None
+
+    def text_completion(self, prompt: str, model: Optional[str] = None, max_tokens: Optional[int] = None,
+                         temperature: float = 1.0, top_p: Optional[float] = None, **kwargs) -> list[str]:
         if max_tokens is None and kwargs.get(MAX_TOKENS_KEY) is None:
             raise ValueError(f"max_tokens or {MAX_TOKENS_KEY} must be specified")
-        if top_p:
-            kwargs["top_p"] = top_p
-        self._set_model_in_kwargs(kwargs, model)
+
         kwargs[PROMPT_KEY] = prompt
         kwargs[MAX_TOKENS_KEY] = kwargs.pop(MAX_TOKENS_KEY, max_tokens)
         kwargs["temperature"] = temperature
-        response = await self._session.post(self._base_url + COMPLETE_PATH,
-                                            json=kwargs,
-                                            headers=self._headers,
-                                            raise_for_status=True)
-        response_json = await response.json()
-        return [response_json[COMPLETIONS_KEY]]
+        if top_p:
+            kwargs["top_p"] = top_p
 
-    async def get_chat_tokens_count(self, messages: list[ChatMessage], **kwargs) -> int:
-        return await self.get_tokens_count(self.messages_to_text(messages), **kwargs)
+        self._set_model_in_kwargs(kwargs, model)
+        response = self._anthropic.messages.create(model=model, messages=[{"content": prompt}], **kwargs)
+        return [response[COMPLETIONS_KEY]]
 
-    async def get_tokens_count(self, text: str, **kwargs) -> int:
-        return await self._anthropic.count_tokens(text)
+    def get_chat_tokens_count(self, messages: list[ChatMessage], **kwargs) -> int:
+        return self.get_tokens_count(self.messages_to_text(messages), **kwargs)
+
+    def get_tokens_count(self, text: str, **kwargs) -> int:
+        return self._anthropic.count_tokens(text)
+        # return sum(len(word.split()) for word in text.split("\n"))  # Approximate token count based on words
 
     def messages_to_text(self, messages: list[ChatMessage]) -> str:
         prompt = START_PREFIX
@@ -72,8 +128,9 @@ class AnthropicClient(BaseLLMAPIClient):
     def _message_to_prompt(message: ChatMessage) -> str:
         if message.role == Role.USER:
             return f"{USER_PREFIX} {message.content}"
-        if message.role == Role.ASSISTANT:
+        elif message.role == Role.ASSISTANT:
             return f"{ASSISTANT_PREFIX} {message.content}"
-        if message.role == Role.SYSTEM:
+        elif message.role == Role.SYSTEM:
             return f"{USER_PREFIX} {SYSTEM_START_PREFIX}{message.content}{SYSTEM_END_PREFIX}"
-        raise ValueError(f"Unknown role: {message.role}")
+        else:
+            raise ValueError(f"Unknown role: {message.role}")
