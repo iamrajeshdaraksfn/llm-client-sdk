@@ -16,7 +16,6 @@ from snowflake.snowpark import Session
 
 
 def chat_completion(
-    self,
     messages: list[ChatMessage],
     temperature: float = 0,
     max_tokens: int = 16,
@@ -43,4 +42,5 @@ def chat_completion(
     # )
     # return completions, token_consumption_dict
     print('completions--------------------------------------',completions)
-    return completions
+
+    return completions, {}
