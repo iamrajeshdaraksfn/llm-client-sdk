@@ -3,17 +3,14 @@ import json
 from snowflake.cortex import Complete
 from typing import Optional
 from llm_client.llm_api_client.base_llm_api_client import (
-    BaseLLMAPIClient,
-    LLMAPIClientConfig,
-    ChatMessage,
+    ChatMessage
 )
 from llm_client.logging import setup_logger
 from snowflake.snowpark import Session
 from llm_client.llm_cost_calculation.snowflake_cortex_cost_calculation import snowflake_cortex_cost_calculation
 
-class SnowflakeCortex(BaseLLMAPIClient):
-    def __init__(self, config: LLMAPIClientConfig):
-        super().__init__(config)
+class SnowflakeCortex:
+    def __init__(self):
         self.logger, _ = setup_logger(logger_name="SnowflakeCortex")
 
     def chat_completion(
@@ -28,7 +25,7 @@ class SnowflakeCortex(BaseLLMAPIClient):
         session: Optional[Session] = None,
         **kwargs,
     ) -> list[str]:
-        self.logger('Started calling Cortex Complete API...')
+        self.logger.info('Started calling Cortex Complete API...')
 
         completions = Complete(
             model,
@@ -36,9 +33,8 @@ class SnowflakeCortex(BaseLLMAPIClient):
             options={"temperature": temperature, "guardrails": False},
             session=session,
         )
-        response = json.loads(completions)
 
-        self.logger("Received Completions response and converted in 'dict' format from 'str'...{response}")
+        self.logger.info("Received cortex {model}, Completions response...{completions}")
 
         # response_content = response['choices'][0]['messages']
         # pattern = re.compile(r'\{.*"text_response".*"mapping".*\}', re.DOTALL)
@@ -55,9 +51,9 @@ class SnowflakeCortex(BaseLLMAPIClient):
         # Calculate token consumption
 
         token_cost_summary = snowflake_cortex_cost_calculation(
-            response=response,
+            response=completions,
             model=model
         )
-        self.logger("After consumed token's cost calculation received token_cost_summary...{token_cost_summary}")
+        self.logger.info("After consumed token's cost calculation received token_cost_summary...{token_cost_summary}")
 
-        return response, token_cost_summary
+        return completions, token_cost_summary

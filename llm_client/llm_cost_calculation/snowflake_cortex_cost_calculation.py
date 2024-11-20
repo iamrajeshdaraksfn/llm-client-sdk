@@ -1,5 +1,6 @@
 from llm_client.consts import CORTEX_MODEL_TOKENS_COST
 import tiktoken
+import json
 
 def calculate_tokens(text: str, model: str) -> int:
     """Calculate the number of tokens in the given text."""
@@ -10,6 +11,7 @@ def snowflake_cortex_cost_calculation(response: dict, model: str) -> tuple:
     """Calculate the cost for consumed tokens for cortex llm."""
     # In Cortex prompt and completions both tokens has same cost/credits
     # So keeping the sum as total of tokens to calculate dollar bill
+    response = json.loads(response)
 
     # Ensure model is supported
     if model not in CORTEX_MODEL_TOKENS_COST:
