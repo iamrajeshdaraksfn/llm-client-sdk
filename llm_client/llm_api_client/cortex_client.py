@@ -9,11 +9,12 @@ from llm_client.llm_api_client.base_llm_api_client import (
 from llm_client.utils.logging import setup_logger
 from snowflake.snowpark import Session
 from llm_client.llm_cost_calculation.snowflake_cortex_cost_calculation import snowflake_cortex_cost_calculation
-
+from llm_client.utils.retry_with import retry_with
 class CortexClient(BaseLLMAPIClient):
     def __init__(self):
         self.logger, _ = setup_logger(logger_name="SnowflakeCortex")
 
+    @retry_with(retries=3, retry_delay=3.0, backoff=True)
     def chat_completion(
         self,
         messages: list[ChatMessage],
@@ -35,8 +36,8 @@ class CortexClient(BaseLLMAPIClient):
             session=session,
         )
 
-        self.logger.info("Received cortex {model}, Completions response...{completions}")
-
+        self.logger.info(f"Received cortex {model}, Completions response...{completions}")
+        
         # response_content = response['choices'][0]['messages']
         # pattern = re.compile(r'\{.*"text_response".*"mapping".*\}', re.DOTALL)
         # match = pattern.search(response_content)
@@ -55,7 +56,7 @@ class CortexClient(BaseLLMAPIClient):
             response=completions,
             model=model
         )
-        self.logger.info("After consumed token's cost calculation received token_cost_summary...{token_cost_summary}")
+        self.logger.info(f"After consumed token's cost calculation received token_cost_summary...{token_cost_summary}")
 
         return completions, token_cost_summary
     

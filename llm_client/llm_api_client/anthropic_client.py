@@ -5,6 +5,7 @@ from anthropic import Anthropic
 from llm_client.llm_api_client.base_llm_api_client import BaseLLMAPIClient, LLMAPIClientConfig, ChatMessage, Role
 from llm_client.utils.consts import PROMPT_KEY
 from llm_client.utils.logging import setup_logger
+from llm_client.utils.retry_with import retry_with
 
 COMPLETE_PATH = "complete"
 BASE_URL = "https://api.anthropic.com/v1/"
@@ -33,6 +34,7 @@ class AnthropicClient(BaseLLMAPIClient):
             AUTH_HEADER: config.api_key,
         }
 
+    @retry_with(retries=3, retry_delay=3.0, backoff=True)
     def chat_completion(self, messages: list[ChatMessage], model: Optional[str] = None,
                     max_tokens: Optional[int] = None, temperature: float = 1.0, retries: int = 3,
                     retry_delay: float = 3.0, **kwargs) -> list[str]:
@@ -56,45 +58,27 @@ class AnthropicClient(BaseLLMAPIClient):
 
         prompt = self.messages_to_text(messages)
 
-        attempt = 0
-        while attempt < retries:
-            try:
-                completions = self.text_completion(
-                    prompt,
-                    model,
-                    max_tokens,
-                    temperature,
-                    **kwargs
-                )
 
-                # Check if response is empty
-                if not completions or not completions.choices:
-                    raise ValueError("Received empty response from the API")
+        completions = self.text_completion(
+            prompt,
+            model,
+            max_tokens,
+            temperature,
+            **kwargs
+        )
 
-                # Calculate token consumption
-                tokens = self.get_chat_tokens_count(messages)
-                print('tokens here -------------------',tokens)
-                # token_cost_summary = llm_cost_calculation(
-                #     completions.usage.prompt_tokens,
-                #     completions.usage.completion_tokens,
-                #     model=model,
-                # )
+        # Calculate token consumption
+        tokens = self.get_chat_tokens_count(messages)
+        print('tokens here -------------------',tokens)
+        # token_cost_summary = llm_cost_calculation(
+        #     completions.usage.prompt_tokens,
+        #     completions.usage.completion_tokens,
+        #     model=model,
+        # )
 
-                # return completions, token_cost_summary
-                return completions
+        # return completions, token_cost_summary
+        return completions
 
-            except Exception as e:
-                attempt += 1
-                self.logger.error(f"Error in chat_completion (attempt {attempt}/{retries}): {e}")
-
-                if attempt >= retries:
-                    self.logger.error("Max retries reached. Unable to complete request.")
-                    raise e  # Reraise the exception after max retries
-
-                time.sleep(retry_delay)  # Wait before retrying
-
-        # If all retries fail, return None
-        return None
 
     def text_completion(self, prompt: str, model: Optional[str] = None, max_tokens: Optional[int] = None,
                          temperature: float = 1.0, top_p: Optional[float] = None, **kwargs) -> list[str]:
