@@ -27,7 +27,7 @@ try:
     except ImportError:
         pass
     try:
-        from llm_client.llm_api_client.snowflake_cortex_client import SnowflakeCortex
+        from llm_client.llm_api_client.cortex_client import CortexClient
     except ImportError:
         pass
 except ImportError:

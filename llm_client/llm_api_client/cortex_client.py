@@ -3,13 +3,14 @@ import json
 from snowflake.cortex import Complete
 from typing import Optional
 from llm_client.llm_api_client.base_llm_api_client import (
+    BaseLLMAPIClient,
     ChatMessage
 )
 from llm_client.logging import setup_logger
 from snowflake.snowpark import Session
 from llm_client.llm_cost_calculation.snowflake_cortex_cost_calculation import snowflake_cortex_cost_calculation
 
-class SnowflakeCortex:
+class CortexClient(BaseLLMAPIClient):
     def __init__(self):
         self.logger, _ = setup_logger(logger_name="SnowflakeCortex")
 
@@ -57,3 +58,13 @@ class SnowflakeCortex:
         self.logger.info("After consumed token's cost calculation received token_cost_summary...{token_cost_summary}")
 
         return completions, token_cost_summary
+    
+    
+    async def text_completion(self, *args, **kwargs):
+        raise NotImplementedError("text_completion is not supported in CortexClient.")
+
+    async def embedding(self, *args, **kwargs):
+        raise NotImplementedError("embedding is not supported in CortexClient.")
+
+    async def get_chat_tokens_count(self, *args, **kwargs):
+        raise NotImplementedError("get_chat_tokens_count is not supported in CortexClient.")
