@@ -26,6 +26,10 @@ try:
         from llm_client.llm_api_client.anthropic_client import AnthropicClient
     except ImportError:
         pass
+    try:
+        from llm_client.llm_api_client.snowflake_cortex_client import SnowflakeCortex
+    except ImportError:
+        pass
 except ImportError:
     pass
 # load local clients

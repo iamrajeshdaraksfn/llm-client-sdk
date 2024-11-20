@@ -1,4 +1,4 @@
-from llm_client.consts import OPENAI_DEFAULT_MODEL
+from llm_client.consts import OPENAI_DEFAULT_MODEL, OPENAI_MODEL_TOKENS_COST
 from llm_client.logging import setup_logger
 
 # Initialize logger
@@ -26,44 +26,8 @@ def openai_cost_calculation(
     """
     logger.info(f'started openai cost calculation with model: {model}')
 
-    # pricing for 1k tokens
-    pricing = {
-        "gpt-3.5-turbo-0125": {
-            "prompt": 0.0005,
-            "completion": 0.0015,
-        },
-        "gpt-3.5-turbo-16k": {
-            "prompt": 0.003,
-            "completion": 0.004,
-        },
-        "gpt-3.5-turbo": {
-            "prompt": 0.003,
-            "completion": 0.006,
-        },
-        "gpt-4-8k": {
-            "prompt": 0.03,
-            "completion": 0.06,
-        },
-        "gpt-4-32k": {
-            "prompt": 0.06,
-            "completion": 0.12,
-        },
-        "gpt-4o": {
-            "prompt": 0.005,
-            "completion": 0.015,
-        },
-        "gpt-4o-mini": {
-            "prompt": 0.00015,
-            "completion": 0.0006,
-        },
-        "text-embedding-ada-002-v2": {
-            "prompt": 0.0001,
-            "completion": 0.0001,
-        },
-    }
-
     try:
-        model_pricing = pricing[model]
+        model_pricing = OPENAI_MODEL_TOKENS_COST[model]
     except KeyError:
         raise ValueError(f"Invalid model specified: {model}")
 
@@ -73,11 +37,11 @@ def openai_cost_calculation(
     total_tokens = total_prompt_tokens + total_completion_tokens
     total_cost_usd = prompt_cost + completion_cost
 
-    token_consumption_dict = {
+    token_cost_summary = {
         "prompt_tokens": total_prompt_tokens,
         "completion_tokens": total_completion_tokens,
         "total_tokens": total_tokens,
         "total_Cost_usd": round(total_cost_usd, 4),
     }
-    logger.info(f'openai cost calculation done! total cost is: {token_consumption_dict}')
-    return token_consumption_dict
+    logger.info(f'openai cost calculation done! total cost is: {token_cost_summary}')
+    return token_cost_summary

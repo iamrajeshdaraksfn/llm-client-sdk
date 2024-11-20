@@ -30,7 +30,7 @@ def test_chat_completion__sanity(open_ai_client):
     mock_response.usage = MagicMock(prompt_tokens=10, completion_tokens=5)
 
     with patch('openai.ChatCompletion.create', return_value=mock_response):
-        actual, token_consumption_dict = open_ai_client.chat_completion(
+        actual, token_cost_summary = open_ai_client.chat_completion(
             messages=[ChatMessage(role=Role.USER, content="Hello!")],
             temperature=0.7,
             max_tokens=20,
@@ -38,7 +38,7 @@ def test_chat_completion__sanity(open_ai_client):
         )
 
     assert actual == mock_response  # Ensure the actual response matches the mock
-    assert token_consumption_dict is not None  # Ensure tokens were calculated
+    assert token_cost_summary is not None  # Ensure tokens were calculated
     open_ai_client.logger.error.assert_not_called()  # Ensure no errors were logged
 
 def test_chat_completion__empty_response(open_ai_client):
@@ -65,7 +65,7 @@ def test_chat_completion__retry_success_after_failure(open_ai_client):
         Exception("Temporary failure"),
         mock_response
     ]):
-        actual, token_consumption_dict = open_ai_client.chat_completion(
+        actual, token_cost_summary = open_ai_client.chat_completion(
             [ChatMessage(Role.USER, "Hello!")],
             retries=3,
             retry_delay=1
@@ -93,7 +93,7 @@ def test_chat_completion__no_retry_on_success(open_ai_client):
     mock_response.usage = MagicMock(prompt_tokens=10, completion_tokens=5)
 
     with patch('openai.Completion.create', return_value=mock_response):
-        actual, token_consumption_dict = open_ai_client.chat_completion(
+        actual, token_cost_summary = open_ai_client.chat_completion(
             [ChatMessage(Role.USER, "Hello!")],
             retries=3,
             retry_delay=1
@@ -112,7 +112,7 @@ def test_chat_completion__multiple_completions(open_ai_client):
     mock_response.usage = MagicMock(prompt_tokens=10, completion_tokens=5)
 
     with patch('openai.Completion.create', return_value=mock_response):
-        actual, token_consumption_dict = open_ai_client.chat_completion(
+        actual, token_cost_summary = open_ai_client.chat_completion(
             [ChatMessage(Role.USER, "Hello!")]
         )
 

@@ -74,13 +74,13 @@ class AnthropicClient(BaseLLMAPIClient):
                 # Calculate token consumption
                 tokens = self.get_chat_tokens_count(messages)
                 print('tokens here -------------------',tokens)
-                # token_consumption_dict = llm_cost_calculation(
+                # token_cost_summary = llm_cost_calculation(
                 #     completions.usage.prompt_tokens,
                 #     completions.usage.completion_tokens,
                 #     model=model,
                 # )
 
-                # return completions, token_consumption_dict
+                # return completions, token_cost_summary
                 return completions
 
             except Exception as e:

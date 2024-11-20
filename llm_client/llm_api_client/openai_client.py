@@ -75,12 +75,12 @@ class OpenAIClient(BaseLLMAPIClient):
                     raise ValueError("Received empty response from the API")
 
                 # Calculate token consumption
-                token_consumption_dict = openai_cost_calculation(
+                token_cost_summary = openai_cost_calculation(
                     completions.usage.prompt_tokens,
                     completions.usage.completion_tokens,
                     model=model,
                 )
-                return completions, token_consumption_dict
+                return completions, token_cost_summary
 
             except Exception as e:
                 attempt += 1
