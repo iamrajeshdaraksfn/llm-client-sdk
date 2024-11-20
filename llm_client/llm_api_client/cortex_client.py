@@ -6,7 +6,7 @@ from llm_client.llm_api_client.base_llm_api_client import (
     BaseLLMAPIClient,
     ChatMessage
 )
-from llm_client.logging import setup_logger
+from llm_client.utils.logging import setup_logger
 from snowflake.snowpark import Session
 from llm_client.llm_cost_calculation.snowflake_cortex_cost_calculation import snowflake_cortex_cost_calculation
 

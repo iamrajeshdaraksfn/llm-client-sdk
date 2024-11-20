@@ -1,6 +1,6 @@
 __version__ = "0.8.0"
 
-from llm_client.base_llm_client import BaseLLMClient
+from llm_client.utils.base_llm_client import BaseLLMClient
 
 # load api clients
 try:

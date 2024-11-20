@@ -1,5 +1,5 @@
-from llm_client.consts import OPENAI_DEFAULT_MODEL, OPENAI_MODEL_TOKENS_COST
-from llm_client.logging import setup_logger
+from llm_client.utils.consts import OPENAI_DEFAULT_MODEL, OPENAI_MODEL_TOKENS_COST
+from llm_client.utils.logging import setup_logger
 
 # Initialize logger
 logger, _ = setup_logger(logger_name="OpenAICostCalculation")

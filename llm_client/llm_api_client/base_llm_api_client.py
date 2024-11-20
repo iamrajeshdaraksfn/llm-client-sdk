@@ -11,7 +11,7 @@ from dataclasses_json import dataclass_json, config
 #     ClientSession = Any
 
 from llm_client import BaseLLMClient
-from llm_client.consts import MODEL_KEY
+from llm_client.utils.consts import MODEL_KEY
 
 
 class Role(Enum):

@@ -3,8 +3,8 @@ import time
 from anthropic import Anthropic
 
 from llm_client.llm_api_client.base_llm_api_client import BaseLLMAPIClient, LLMAPIClientConfig, ChatMessage, Role
-from llm_client.consts import PROMPT_KEY
-from llm_client.logging import setup_logger
+from llm_client.utils.consts import PROMPT_KEY
+from llm_client.utils.logging import setup_logger
 
 COMPLETE_PATH = "complete"
 BASE_URL = "https://api.anthropic.com/v1/"

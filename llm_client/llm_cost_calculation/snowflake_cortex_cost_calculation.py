@@ -1,4 +1,4 @@
-from llm_client.consts import CORTEX_MODEL_TOKENS_COST
+from llm_client.utils.consts import CORTEX_MODEL_TOKENS_COST
 import tiktoken
 import json
 

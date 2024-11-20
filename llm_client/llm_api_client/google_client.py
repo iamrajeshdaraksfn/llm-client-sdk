@@ -6,7 +6,7 @@ except ImportError:
     MessagePrompt = Any  # This only needed for runtime chat_completion and chat tokens count
 
 from llm_client.llm_api_client.base_llm_api_client import BaseLLMAPIClient, LLMAPIClientConfig
-from llm_client.consts import PROMPT_KEY
+from llm_client.utils.consts import PROMPT_KEY
 
 COMPLETE_PATH = "generateText"
 CHAT_PATH = "generateMessage"
