@@ -22,7 +22,7 @@ def openai_cost_calculation(
             - prompt_tokens: The total number of prompt tokens.
             - completion_tokens: The total number of completion tokens.
             - total_tokens: The total number of tokens.
-            - total_Cost_usd: The total cost in USD.
+            - total_cost_usd: The total cost in USD.
     """
     logger.info(f'started openai cost calculation with model: {model}')
 
@@ -41,7 +41,7 @@ def openai_cost_calculation(
         "prompt_tokens": total_prompt_tokens,
         "completion_tokens": total_completion_tokens,
         "total_tokens": total_tokens,
-        "total_Cost_usd": round(total_cost_usd, 4),
+        "total_cost_usd": round(total_cost_usd, 4),
     }
     logger.info(f'openai cost calculation done! total cost is: {token_cost_summary}')
     return token_cost_summary

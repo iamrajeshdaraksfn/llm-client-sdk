@@ -32,7 +32,7 @@ class CortexClient(BaseLLMAPIClient):
         completions = Complete(
             model,
             prompt=messages,
-            options={"temperature": temperature, "guardrails": False},
+            options={"max_tokens": max_tokens, "temperature": temperature, "guardrails": False},
             session=session,
         )
 

@@ -6,6 +6,7 @@ from llm_client.llm_api_client.base_llm_api_client import BaseLLMAPIClient, LLMA
 from llm_client.utils.consts import PROMPT_KEY
 from llm_client.utils.logging import setup_logger
 from llm_client.utils.retry_with import retry_with
+from llm_cost_calculation import anthropic_cost_calculation
 
 COMPLETE_PATH = "complete"
 BASE_URL = "https://api.anthropic.com/v1/"
@@ -54,30 +55,16 @@ class AnthropicClient(BaseLLMAPIClient):
         """
 
         self.logger.info("Started running llm client sdk chat completion...")
-        self._set_model_in_kwargs(kwargs, model)
+        response = self._anthropic.messages.create(model=model, max_tokens=max_tokens, messages=messages, **kwargs)
 
-        prompt = self.messages_to_text(messages)
-
-
-        completions = self.text_completion(
-            prompt,
-            model,
-            max_tokens,
-            temperature,
-            **kwargs
+        # Calculate token consumption cost
+        token_cost_summary = anthropic_cost_calculation(
+            response.usage.input_tokens,
+            response.usage.output_tokens,
+            model=model,
         )
 
-        # Calculate token consumption
-        tokens = self.get_chat_tokens_count(messages)
-        print('tokens here -------------------',tokens)
-        # token_cost_summary = llm_cost_calculation(
-        #     completions.usage.prompt_tokens,
-        #     completions.usage.completion_tokens,
-        #     model=model,
-        # )
-
-        # return completions, token_cost_summary
-        return completions
+        return response, token_cost_summary
 
 
     def text_completion(self, prompt: str, model: Optional[str] = None, max_tokens: Optional[int] = None,
