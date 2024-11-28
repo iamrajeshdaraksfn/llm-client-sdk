@@ -30,6 +30,18 @@ try:
         from llm_client.llm_api_client.cortex_client import CortexClient
     except ImportError:
         pass
+    try:
+        from llm_client.llm_cost_calculation.openai_cost_calculation import openai_cost_calculation
+    except ImportError:
+        pass
+    try:
+        from llm_client.llm_cost_calculation.snowflake_cortex_cost_calculation import snowflake_cortex_cost_calculation
+    except ImportError:
+        pass
+    try:
+        from llm_client.llm_cost_calculation.anthropic_cost_calculation import anthropic_cost_calculation
+    except ImportError:
+        pass
 except ImportError:
     pass
 # load local clients
