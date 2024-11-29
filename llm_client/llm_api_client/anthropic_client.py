@@ -6,7 +6,7 @@ from llm_client.llm_api_client.base_llm_api_client import BaseLLMAPIClient, LLMA
 from llm_client.utils.consts import PROMPT_KEY
 from llm_client.utils.logging import setup_logger
 from llm_client.utils.retry_with import retry_with
-from llm_cost_calculation import anthropic_cost_calculation
+from llm_client.llm_cost_calculation.anthropic_cost_calculation import anthropic_cost_calculation
 
 COMPLETE_PATH = "complete"
 BASE_URL = "https://api.anthropic.com/v1/"
