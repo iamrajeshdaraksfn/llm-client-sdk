@@ -1,7 +1,7 @@
 import pytest
 
-from llm_client.llm_api_client.huggingface_client import HuggingFaceClient, BASE_URL
-from llm_client.llm_api_client.base_llm_api_client import LLMAPIClientConfig
+from sfn_llm_client.llm_api_client.huggingface_client import HuggingFaceClient, BASE_URL
+from sfn_llm_client.llm_api_client.base_llm_api_client import LLMAPIClientConfig
 
 
 @pytest.fixture

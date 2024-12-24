@@ -1,7 +1,7 @@
 import pytest
 
-from llm_client import LLMAPIClientType, LLMAPIClientFactory
-from llm_client.llm_api_client.ai21_client import BASE_URL, DATA_KEY, TEXT_KEY, TOKENIZE_PATH, AUTH_HEADER, \
+from sfn_llm_client import LLMAPIClientType, LLMAPIClientFactory
+from sfn_llm_client.llm_api_client.ai21_client import BASE_URL, DATA_KEY, TEXT_KEY, TOKENIZE_PATH, AUTH_HEADER, \
     BEARER_TOKEN, AI21Client
 from tests.llm_api_client.ai21_client.conftest import build_url
 from tests.test_utils.load_json_resource import load_json_resource

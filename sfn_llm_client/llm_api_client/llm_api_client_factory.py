@@ -3,7 +3,7 @@ from typing import Optional
 
 from aiohttp import ClientSession
 
-from llm_client.llm_api_client.base_llm_api_client import BaseLLMAPIClient, LLMAPIClientConfig
+from sfn_llm_client.llm_api_client.base_llm_api_client import BaseLLMAPIClient, LLMAPIClientConfig
 
 
 class LLMAPIClientType(Enum):
@@ -36,22 +36,22 @@ class LLMAPIClientFactory:
 
 def get_llm_api_client_class(llm_api_client_type: LLMAPIClientType):
     if llm_api_client_type == LLMAPIClientType.OPEN_AI:
-        from llm_client import OpenAIClient
+        from sfn_llm_client import OpenAIClient
         return OpenAIClient
     elif llm_api_client_type == LLMAPIClientType.AI21:
-        from llm_client import AI21Client
+        from sfn_llm_client import AI21Client
         return AI21Client
     elif llm_api_client_type == LLMAPIClientType.HUGGING_FACE:
-        from llm_client import HuggingFaceClient
+        from sfn_llm_client import HuggingFaceClient
         return HuggingFaceClient
     elif llm_api_client_type == LLMAPIClientType.ALEPH_ALPHA:
-        from llm_client import AlephAlphaClient
+        from sfn_llm_client import AlephAlphaClient
         return AlephAlphaClient
     elif llm_api_client_type == LLMAPIClientType.ANTHROPIC:
-        from llm_client import AnthropicClient
+        from sfn_llm_client import AnthropicClient
         return AnthropicClient
     elif llm_api_client_type == LLMAPIClientType.GOOGLE:
-        from llm_client import GoogleClient
+        from sfn_llm_client import GoogleClient
         return GoogleClient
     else:
         raise ValueError("Unknown LLM client type")

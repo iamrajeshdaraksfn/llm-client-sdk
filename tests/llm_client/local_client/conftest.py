@@ -3,7 +3,7 @@ from unittest.mock import MagicMock
 import pytest
 from transformers import PreTrainedTokenizerBase
 
-from llm_client import LocalClientConfig, LocalClient
+from sfn_llm_client import LocalClientConfig, LocalClient
 
 
 @pytest.fixture

@@ -3,8 +3,8 @@ from unittest.mock import MagicMock, patch
 import pytest
 from aiohttp import ClientSession
 
-from llm_client.llm_api_client.base_llm_api_client import LLMAPIClientConfig
-from llm_client.llm_api_client.openai_client import OpenAIClient
+from sfn_llm_client.llm_api_client.base_llm_api_client import LLMAPIClientConfig
+from sfn_llm_client.llm_api_client.openai_client import OpenAIClient
 
 
 @pytest.fixture
@@ -14,7 +14,7 @@ def model_name():
 
 @pytest.fixture
 def openai_mock():
-    with patch("llm_client.llm_api_client.openai_client.openai") as openai_mock:
+    with patch("sfn_llm_client.llm_api_client.openai_client.openai") as openai_mock:
         yield openai_mock
 
 
@@ -30,5 +30,5 @@ def open_ai_client(config):
 
 @pytest.fixture
 def tiktoken_mock():
-    with patch("llm_client.llm_api_client.openai_client.tiktoken") as tiktoken_mock:
+    with patch("sfn_llm_client.llm_api_client.openai_client.tiktoken") as tiktoken_mock:
         yield tiktoken_mock

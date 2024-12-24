@@ -7,7 +7,7 @@ except ImportError:
     PreTrainedModel = Any
     PreTrainedTokenizerBase = Any
 
-from llm_client import BaseLLMClient
+from sfn_llm_client import BaseLLMClient
 
 
 @dataclass

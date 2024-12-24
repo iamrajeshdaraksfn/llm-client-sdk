@@ -4,12 +4,12 @@ from typing import Optional
 import openai
 import tiktoken
 from tiktoken import Encoding
-from llm_client.llm_api_client.base_llm_api_client import BaseLLMAPIClient, LLMAPIClientConfig, ChatMessage
-from llm_client.utils.consts import PROMPT_KEY
-from llm_client.llm_cost_calculation.openai_cost_calculation import openai_cost_calculation
+from sfn_llm_client.llm_api_client.base_llm_api_client import BaseLLMAPIClient, LLMAPIClientConfig, ChatMessage
+from sfn_llm_client.utils.consts import PROMPT_KEY
+from sfn_llm_client.llm_cost_calculation.openai_cost_calculation import openai_cost_calculation
 # import aiohttp
-from llm_client.utils.logging import setup_logger
-from llm_client.utils.retry_with import retry_with
+from sfn_llm_client.utils.logging import setup_logger
+from sfn_llm_client.utils.retry_with import retry_with
 
 INPUT_KEY = "input"
 MODEL_NAME_TO_TOKENS_PER_MESSAGE_AND_TOKENS_PER_NAME = {

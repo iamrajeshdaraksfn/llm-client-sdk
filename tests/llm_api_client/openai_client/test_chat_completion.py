@@ -1,9 +1,9 @@
 import os
 from unittest.mock import MagicMock, patch
 import pytest
-from llm_client.llm_api_client.openai_client import ChatMessage
-from llm_client import OpenAIClient
-from llm_client.llm_api_client.base_llm_api_client import LLMAPIClientConfig, Role
+from sfn_llm_client.llm_api_client.openai_client import ChatMessage
+from sfn_llm_client import OpenAIClient
+from sfn_llm_client.llm_api_client.base_llm_api_client import LLMAPIClientConfig, Role
 
 OPENAI_API_KEY = os.environ.get("OPENAI_API_KEY")
 MODEL = "gpt-3.5-turbo-0125"

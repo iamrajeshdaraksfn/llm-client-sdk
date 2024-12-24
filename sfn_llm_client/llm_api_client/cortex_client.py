@@ -2,14 +2,14 @@ import json
 # import re
 from snowflake.cortex import Complete
 from typing import Optional
-from llm_client.llm_api_client.base_llm_api_client import (
+from sfn_llm_client.llm_api_client.base_llm_api_client import (
     BaseLLMAPIClient,
     ChatMessage
 )
-from llm_client.utils.logging import setup_logger
+from sfn_llm_client.utils.logging import setup_logger
 from snowflake.snowpark import Session
-from llm_client.llm_cost_calculation.snowflake_cortex_cost_calculation import snowflake_cortex_cost_calculation
-from llm_client.utils.retry_with import retry_with
+from sfn_llm_client.llm_cost_calculation.snowflake_cortex_cost_calculation import snowflake_cortex_cost_calculation
+from sfn_llm_client.utils.retry_with import retry_with
 class CortexClient(BaseLLMAPIClient):
     def __init__(self):
         self.logger, _ = setup_logger(logger_name="SnowflakeCortex")

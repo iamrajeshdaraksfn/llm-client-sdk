@@ -1,6 +1,6 @@
 import json
 from unittest.mock import patch
-from llm_client.llm_api_client.cortex_client import snowflake_cortex_cost_calculation
+from sfn_llm_client.llm_api_client.cortex_client import snowflake_cortex_cost_calculation
 
 def test_snowflake_cortex_cost_calculation(self):
     """Test the token cost calculation for Cortex."""

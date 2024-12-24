@@ -5,8 +5,8 @@ from typing import Callable, Any
 import async_to_sync
 from aiohttp import ClientSession
 
-from llm_client import LLMAPIClientConfig
-from llm_client.llm_api_client.llm_api_client_factory import LLMAPIClientType, get_llm_api_client_class
+from sfn_llm_client import LLMAPIClientConfig
+from sfn_llm_client.llm_api_client.llm_api_client_factory import LLMAPIClientType, get_llm_api_client_class
 
 
 def _create_new_session(f: Callable[..., Any]) -> Callable[..., Any]:

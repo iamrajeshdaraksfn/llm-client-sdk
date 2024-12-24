@@ -2,8 +2,8 @@ from typing import Optional
 
 import pytest
 
-from llm_client.llm_api_client.google_client import GoogleClient, BASE_URL, AUTH_PARAM
-from llm_client.llm_api_client.base_llm_api_client import LLMAPIClientConfig, BaseLLMAPIClient
+from sfn_llm_client.llm_api_client.google_client import GoogleClient, BASE_URL, AUTH_PARAM
+from sfn_llm_client.llm_api_client.base_llm_api_client import LLMAPIClientConfig, BaseLLMAPIClient
 
 
 @pytest.fixture

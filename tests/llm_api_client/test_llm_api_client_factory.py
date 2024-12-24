@@ -2,8 +2,8 @@ from unittest.mock import patch
 
 import pytest
 
-from llm_client import LLMAPIClientType, LLMAPIClientFactory, LLMAPIClientConfig
-from llm_client.llm_api_client.llm_api_client_factory import get_llm_api_client_class
+from sfn_llm_client import LLMAPIClientType, LLMAPIClientFactory, LLMAPIClientConfig
+from sfn_llm_client.llm_api_client.llm_api_client_factory import get_llm_api_client_class
 
 
 def test_get_llm_api_client__without_context_manager():
@@ -24,7 +24,7 @@ async def test_get_llm_api_client__with_client_type(client_type, client_patch):
 
     llm_api_client_factory = LLMAPIClientFactory()
     async with llm_api_client_factory:
-        with patch(f"llm_client.{client_patch}") as mock_client:
+        with patch(f"sfn_llm_client.{client_patch}") as mock_client:
             actual = llm_api_client_factory.get_llm_api_client(client_type, api_key="super secret key")
 
             assert actual is mock_client.return_value
@@ -49,7 +49,7 @@ async def test_get_llm_api_client__with_unknown_client_type():
 def test_get_llm_api_client_class(client_type, client_patch):
     assert len(LLMAPIClientType) == 6
 
-    with patch(f"llm_client.{client_patch}") as mock_client:
+    with patch(f"sfn_llm_client.{client_patch}") as mock_client:
         actual = get_llm_api_client_class(client_type)
 
         assert actual is mock_client

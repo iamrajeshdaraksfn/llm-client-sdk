@@ -10,8 +10,8 @@ from dataclasses_json import dataclass_json, config
 # except ImportError:
 #     ClientSession = Any
 
-from llm_client import BaseLLMClient
-from llm_client.utils.consts import MODEL_KEY
+from sfn_llm_client import BaseLLMClient
+from sfn_llm_client.utils.consts import MODEL_KEY
 
 
 class Role(Enum):

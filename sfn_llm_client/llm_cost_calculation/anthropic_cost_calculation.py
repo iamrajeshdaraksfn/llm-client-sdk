@@ -1,5 +1,5 @@
-from llm_client.utils.consts import ANTHROPIC_DEFAULT_MODEL, ANTHROPIC_MODEL_TOKENS_COST
-from llm_client.utils.logging import setup_logger
+from sfn_llm_client.utils.consts import ANTHROPIC_DEFAULT_MODEL, ANTHROPIC_MODEL_TOKENS_COST
+from sfn_llm_client.utils.logging import setup_logger
 
 # Initialize logger
 logger, _ = setup_logger(logger_name="AnthropicCostCalculation")

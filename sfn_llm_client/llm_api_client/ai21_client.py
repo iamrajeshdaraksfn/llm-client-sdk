@@ -1,7 +1,7 @@
 from typing import Optional
 
-from llm_client.llm_api_client.base_llm_api_client import BaseLLMAPIClient, LLMAPIClientConfig
-from llm_client.utils.consts import PROMPT_KEY
+from sfn_llm_client.llm_api_client.base_llm_api_client import BaseLLMAPIClient, LLMAPIClientConfig
+from sfn_llm_client.utils.consts import PROMPT_KEY
 
 COMPLETE_PATH = "complete"
 TOKENIZE_PATH = "tokenize"

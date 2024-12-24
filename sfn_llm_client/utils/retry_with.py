@@ -1,7 +1,7 @@
 import time
 from functools import wraps
 from typing import Callable, Any
-from llm_client.utils.logging import setup_logger
+from sfn_llm_client.utils.logging import setup_logger
 
 def retry_with(
     retries: int = 3,

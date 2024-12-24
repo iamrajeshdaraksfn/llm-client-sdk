@@ -2,7 +2,7 @@ from unittest.mock import call
 
 import pytest
 
-from llm_client.llm_client.local_client import LocalClient, LocalClientConfig
+from sfn_llm_client.llm_client.local_client import LocalClient, LocalClientConfig
 
 
 @pytest.mark.asyncio

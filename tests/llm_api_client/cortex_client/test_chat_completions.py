@@ -1,8 +1,8 @@
 import json
 from unittest.mock import patch, MagicMock
-from llm_client.llm_api_client.base_llm_api_client import ChatMessage, Role
+from sfn_llm_client.llm_api_client.base_llm_api_client import ChatMessage, Role
 from snowflake.snowpark import Session
-from llm_client.llm_api_client.cortex_client import CortexClient
+from sfn_llm_client.llm_api_client.cortex_client import CortexClient
 
 @patch("cortex_client.Complete")
 @patch("cortex_client.setup_logger")

@@ -2,12 +2,12 @@ from unittest.mock import AsyncMock
 
 import pytest
 
-from llm_client import LLMAPIClientFactory, LLMAPIClientType, ChatMessage
-from llm_client.utils.consts import PROMPT_KEY, MODEL_KEY
-from llm_client.llm_api_client.anthropic_client import AUTH_HEADER, COMPLETIONS_KEY, MAX_TOKENS_KEY, ACCEPT_HEADER, \
+from sfn_llm_client import LLMAPIClientFactory, LLMAPIClientType, ChatMessage
+from sfn_llm_client.utils.consts import PROMPT_KEY, MODEL_KEY
+from sfn_llm_client.llm_api_client.anthropic_client import AUTH_HEADER, COMPLETIONS_KEY, MAX_TOKENS_KEY, ACCEPT_HEADER, \
     ACCEPT_VALUE, VERSION_HEADER, AnthropicClient, USER_PREFIX, ASSISTANT_PREFIX, START_PREFIX, SYSTEM_START_PREFIX, \
     SYSTEM_END_PREFIX
-from llm_client.llm_api_client.base_llm_api_client import Role
+from sfn_llm_client.llm_api_client.base_llm_api_client import Role
 
 
 @pytest.mark.asyncio

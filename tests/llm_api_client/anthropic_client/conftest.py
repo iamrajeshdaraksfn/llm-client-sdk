@@ -2,8 +2,8 @@ from unittest.mock import patch, AsyncMock
 
 import pytest
 
-from llm_client.llm_api_client.anthropic_client import BASE_URL, COMPLETE_PATH, VERSION_HEADER, AnthropicClient
-from llm_client.llm_api_client.base_llm_api_client import LLMAPIClientConfig
+from sfn_llm_client.llm_api_client.anthropic_client import BASE_URL, COMPLETE_PATH, VERSION_HEADER, AnthropicClient
+from sfn_llm_client.llm_api_client.base_llm_api_client import LLMAPIClientConfig
 
 
 @pytest.fixture
@@ -38,7 +38,7 @@ def anthropic_version():
 
 @pytest.fixture(autouse=True)
 def mock_anthropic(number_of_tokens, anthropic_version):
-    with patch("llm_client.llm_api_client.anthropic_client.AsyncAnthropic") as mock_anthropic:
+    with patch("sfn_llm_client.llm_api_client.anthropic_client.AsyncAnthropic") as mock_anthropic:
         mock_anthropic.return_value.count_tokens = AsyncMock(return_value=number_of_tokens)
         mock_anthropic.return_value.default_headers = {VERSION_HEADER: anthropic_version}
         yield mock_anthropic

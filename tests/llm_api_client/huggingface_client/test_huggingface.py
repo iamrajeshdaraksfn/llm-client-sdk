@@ -1,7 +1,7 @@
 import pytest
 
-from llm_client import LLMAPIClientType, LLMAPIClientFactory
-from llm_client.llm_api_client.huggingface_client import AUTH_HEADER, \
+from sfn_llm_client import LLMAPIClientType, LLMAPIClientFactory
+from sfn_llm_client.llm_api_client.huggingface_client import AUTH_HEADER, \
     BEARER_TOKEN, HuggingFaceClient
 from tests.test_utils.load_json_resource import load_json_resource
 

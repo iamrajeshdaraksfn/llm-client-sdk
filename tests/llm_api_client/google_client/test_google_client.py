@@ -1,8 +1,8 @@
 import pytest
 
-from llm_client import LLMAPIClientType, LLMAPIClientFactory
-from llm_client.utils.consts import PROMPT_KEY
-from llm_client.llm_api_client.google_client import TEXT_KEY, GoogleClient, COMPLETE_PATH, AUTH_PARAM, CHAT_PATH, \
+from sfn_llm_client import LLMAPIClientType, LLMAPIClientFactory
+from sfn_llm_client.utils.consts import PROMPT_KEY
+from sfn_llm_client.llm_api_client.google_client import TEXT_KEY, GoogleClient, COMPLETE_PATH, AUTH_PARAM, CHAT_PATH, \
     EMBEDDING_PATH, TOKENIZE_PATH, MESSAGES_KEY, MESSAGE_CONTENT_KEY, MAX_TOKENS_KEY
 from tests.llm_api_client.google_client.conftest import build_url
 from tests.test_utils.load_json_resource import load_json_resource

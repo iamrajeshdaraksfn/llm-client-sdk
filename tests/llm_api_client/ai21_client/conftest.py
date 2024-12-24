@@ -1,7 +1,7 @@
 import pytest
 
-from llm_client.llm_api_client.ai21_client import AI21Client, COMPLETE_PATH, BASE_URL
-from llm_client.llm_api_client.base_llm_api_client import LLMAPIClientConfig
+from sfn_llm_client.llm_api_client.ai21_client import AI21Client, COMPLETE_PATH, BASE_URL
+from sfn_llm_client.llm_api_client.base_llm_api_client import LLMAPIClientConfig
 
 
 @pytest.fixture

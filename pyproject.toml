@@ -1,15 +1,14 @@
 [build-system]
-requires = ["hatchling"]
-build-backend = "hatchling.build"
+requires = ["setuptools", "wheel"]
+build-backend = "setuptools.build_meta"
 
 [project]
-name = "llm-client"
+name = "sfn_llm_client"
 description = "SDK for using LLM"
 readme = "README.md"
 requires-python = ">=3.9"
-license = "MIT"
 authors = [
-    { name = "Uri Peled", email = "uripeled2@gmail.com" },
+    { name = "Rajesh Darak", email = "rajesh@stepfuction.ai" },
 ]
 classifiers = [
     "Operating System :: OS Independent",
@@ -34,7 +33,7 @@ dependencies = [
 dynamic = ["version"]
 
 [project.urls]
-Homepage = "https://github.com/uripeled2/llm-client-sdk"
+Homepage = "https://github.com/iamrajeshdaraksfn/llm-client-sdk.git"
 
 [project.optional-dependencies]
 test = [
@@ -64,7 +63,7 @@ google = [
     "google-generativeai >= 0.1.0"
 ]
 api = [
-    "llm-client[openai,huggingface,anthropic,google]"
+    "sfn_llm_client[openai,huggingface,anthropic,google,arctic]"
 ]
 local = [
     "transformers >= 4.0.0"
@@ -73,16 +72,15 @@ sync =  [
     "async_to_sync >= 0.2.0"
 ]
 all = [
-    "llm-client[api,local,sync]"
+    "sfn_llm_client[api,local,sync]"
 ]
 
 [tool.hatch.version]
-path = "llm_client/__init__.py"
+path = "sfn_llm_client/__init__.py"
 
 [tool.coverage.run]
 parallel = true
 source = [
-    "tests",
-    "llm_client"
+    "sfn_llm_client"
 ]
 context = '${CONTEXT}'
