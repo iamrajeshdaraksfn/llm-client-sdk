@@ -55,6 +55,7 @@ class AnthropicClient(BaseLLMAPIClient):
         """
 
         self.logger.info("Started running llm client sdk chat completion...")
+        del kwargs['session'] #deleting session key not required for anthropic
         response = self._anthropic.messages.create(model=model, max_tokens=max_tokens, messages=messages, **kwargs)
 
         # Calculate token consumption cost
