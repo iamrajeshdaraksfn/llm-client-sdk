@@ -26,22 +26,30 @@ def openai_cost_calculation(
     """
     logger.info(f'started openai cost calculation with model: {model}')
 
-    try:
-        model_pricing = OPENAI_MODEL_TOKENS_COST[model]
-    except KeyError:
-        raise ValueError(f"Invalid model specified: {model}")
 
-    # Calculate costs
-    prompt_cost = total_prompt_tokens * model_pricing["prompt"] / 1000
-    completion_cost = total_completion_tokens * model_pricing["completion"] / 1000
-    total_tokens = total_prompt_tokens + total_completion_tokens
-    total_cost_usd = prompt_cost + completion_cost
+    model_pricing = OPENAI_MODEL_TOKENS_COST[model]
 
-    token_cost_summary = {
-        "prompt_tokens": total_prompt_tokens,
-        "completion_tokens": total_completion_tokens,
-        "total_tokens": total_tokens,
-        "total_cost_usd": round(total_cost_usd, 4),
-    }
-    logger.info(f'openai cost calculation done! total cost is: {token_cost_summary}')
+    if model_pricing:
+        # Calculate costs
+        prompt_cost = total_prompt_tokens * model_pricing["prompt"] / 1000
+        completion_cost = total_completion_tokens * model_pricing["completion"] / 1000
+        total_tokens = total_prompt_tokens + total_completion_tokens
+        total_cost_usd = prompt_cost + completion_cost
+
+        token_cost_summary = {
+            "prompt_tokens": total_prompt_tokens,
+            "completion_tokens": total_completion_tokens,
+            "total_tokens": total_tokens,
+            "total_cost_usd": round(total_cost_usd, 4),
+        }
+        logger.info(f'openai cost calculation done! total cost is: {token_cost_summary}')
+        logger.info(f'\n Please note: The costs listed were determined as of June 24, 2025. Prices are subject to change, so for accurate and real-time cost information, please visit the OpenAI pricing page: https://platform.openai.com/docs/pricing')
+    else:
+        token_cost_summary = {
+            "prompt_tokens": total_prompt_tokens,
+            "completion_tokens": total_completion_tokens,
+            "total_tokens": total_tokens,
+            "total_cost_usd": None,
+        }
+        logger.info(f'unable to calculate total cost as this model is not exist in our list: {model}')
     return token_cost_summary

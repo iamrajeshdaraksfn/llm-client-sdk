@@ -43,17 +43,93 @@ OPENAI_MODEL_TOKENS_COST = {
             "prompt": 0.06,
             "completion": 0.12,
         },
-        "gpt-4o": {
-            "prompt": 0.005,
-            "completion": 0.015,
-        },
-        "gpt-4o-mini": {
-            "prompt": 0.00015,
-            "completion": 0.0006,
-        },
         "text-embedding-ada-002-v2": {
             "prompt": 0.0001,
             "completion": 0.0001,
+        },
+        "gpt-4.1": {
+            "prompt": 0.002,
+            "completion": 0.008
+        },
+        "gpt-4.1-mini": {
+            "prompt": 0.0004,
+            "completion": 0.0016
+        },
+        "gpt-4.1-nano": {
+            "prompt": 0.0001,
+            "completion": 0.0004
+        },
+        "gpt-4.5-preview": {
+            "prompt": 0.075,
+            "completion": 0.15
+        },
+        "gpt-4o": {
+            "prompt": 0.0025,
+            "completion": 0.01
+        },
+        "gpt-4o-audio-preview": {
+            "prompt": 0.0025,
+            "completion": 0.01
+        },
+        "gpt-4o-realtime-preview": {
+            "prompt": 0.005,
+            "completion": 0.02
+        },
+        "gpt-4o-mini": {
+            "prompt": 0.00015,
+            "completion": 0.0006
+        },
+        "gpt-4o-mini-audio-preview": {
+            "prompt": 0.00015,
+            "completion": 0.0006
+        },
+        "gpt-4o-mini-realtime-preview": {
+            "prompt": 0.0006,
+            "completion": 0.0024
+        },
+        "o1": {
+            "prompt": 0.015,
+            "completion": 0.06
+        },
+        "o1-pro": {
+            "prompt": 0.15,
+            "completion": 0.6
+        },
+        "o3-pro": {
+            "prompt": 0.02,
+            "completion": 0.08
+        },
+        "o3": {
+            "prompt": 0.002,
+            "completion": 0.008
+        },
+        "o4-mini": {
+            "prompt": 0.0011,
+            "completion": 0.0044
+        },
+        "o3-mini": {
+            "prompt": 0.0011,
+            "completion": 0.0044
+        },
+        "o1-mini": {
+            "prompt": 0.0011,
+            "completion": 0.0044
+        },
+        "codex-mini-latest": {
+            "prompt": 0.0015,
+            "completion": 0.006
+        },
+        "gpt-4o-mini-search-preview": {
+            "prompt": 0.00015,
+            "completion": 0.0006
+        },
+        "gpt-4o-search-preview": {
+            "prompt": 0.0025,
+            "completion": 0.01
+        },
+        "computer-use-preview": {
+            "prompt": 0.003,
+            "completion": 0.012
         },
     }
 
