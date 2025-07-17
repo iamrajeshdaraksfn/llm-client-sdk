@@ -34,6 +34,7 @@ setup(
         "snowflake-ml-python==1.7.0",
         "snowflake-snowpark-python==1.23.0",
         "transformers >= 4.46.2",
+        "langchain-openai >= 0.3.28",
     ],
     extras_require={
         'test': [
@@ -59,11 +60,14 @@ setup(
             "snowflake-snowpark-python==1.23.0",
             "transformers >= 4.46.2",
         ],
+        'openai_langchain': [
+            "langchain-openai >= 0.3.28",
+        ],
         'google': [
             "google-generativeai >= 0.1.0",
         ],
         'api': [
-            "sfn_llm_client[openai,huggingface,anthropic,google,cortex]",
+            "sfn_llm_client[openai,huggingface,anthropic,google,arctic]",
         ],
         'local': [
             "transformers >= 4.0.0",

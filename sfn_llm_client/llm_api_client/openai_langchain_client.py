@@ -1,15 +1,8 @@
-import time
-from functools import lru_cache
 from typing import Optional
-# import openai
 from langchain_openai import ChatOpenAI
-from langchain_core.messages import HumanMessage, SystemMessage
-import tiktoken
-from tiktoken import Encoding
 from sfn_llm_client.llm_api_client.base_llm_api_client import BaseLLMAPIClient, LLMAPIClientConfig, ChatMessage
 from sfn_llm_client.utils.consts import PROMPT_KEY
 from sfn_llm_client.llm_cost_calculation.openai_cost_calculation import openai_cost_calculation
-# import aiohttp
 from sfn_llm_client.utils.logging import setup_logger
 from sfn_llm_client.utils.retry_with import retry_with
 
@@ -50,6 +43,7 @@ class OpenAILangchainClient(BaseLLMAPIClient):
             message if isinstance(message, dict) else message.to_dict() 
             for message in messages
         ]
+        # TODO: create client if param different
         # self._get_or_create_client(model)
         client = ChatOpenAI(
             api_key=self._api_key,
@@ -75,3 +69,12 @@ class OpenAILangchainClient(BaseLLMAPIClient):
             model,
         )
         return completions, token_cost_summary
+    
+    async def text_completion(self, *args, **kwargs):
+        raise NotImplementedError("text_completion is not supported in OpenAILangchainClient.")
+
+    async def embedding(self, *args, **kwargs):
+        raise NotImplementedError("embedding is not supported in OpenAILangchainClient.")
+
+    async def get_chat_tokens_count(self, *args, **kwargs):
+        raise NotImplementedError("get_chat_tokens_count is not supported in OpenAILangchainClient.")
