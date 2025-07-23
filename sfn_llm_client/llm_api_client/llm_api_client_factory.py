@@ -13,6 +13,7 @@ class LLMAPIClientType(Enum):
     ALEPH_ALPHA = "AlephAlpha"
     ANTHROPIC = "ANTHROPIC"
     GOOGLE = "GOOGLE"
+    OPENAI_LANGCHAIN = "OpenAILangchain"
 
 
 class LLMAPIClientFactory:
@@ -53,5 +54,8 @@ def get_llm_api_client_class(llm_api_client_type: LLMAPIClientType):
     elif llm_api_client_type == LLMAPIClientType.GOOGLE:
         from sfn_llm_client import GoogleClient
         return GoogleClient
+    elif llm_api_client_type == LLMAPIClientType.OPENAI_LANGCHAIN:
+        from sfn_llm_client import OpenAILangchainClient
+        return OpenAILangchainClient
     else:
         raise ValueError("Unknown LLM client type")

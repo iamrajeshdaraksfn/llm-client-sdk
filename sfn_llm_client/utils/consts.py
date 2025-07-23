@@ -18,7 +18,8 @@ CORTEX_MODEL_TOKENS_COST = {
     "mixtral-8x7b": {"TOKENS_COST": 0.22},
     "reka-core": {"TOKENS_COST": 5.50},
     "reka-flash": {"TOKENS_COST": 0.45},
-    "snowflake-arctic": {"TOKENS_COST": 0.84}
+    "snowflake-arctic": {"TOKENS_COST": 0.84},
+    "claude-3-5-sonnet": {"TOKENS_COST": 2.55}
 }
 
 # pricing for 1k tokens

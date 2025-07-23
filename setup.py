@@ -35,6 +35,10 @@ setup(
         "snowflake-snowpark-python==1.23.0",
         "transformers >= 4.46.2",
         "langchain-openai >= 0.3.28",
+        "snowflake-snowpark-python >=1.0.0",
+        "langchain-community >= 0.0.30",
+        "pydantic >=2.6.0, <3.0.0",
+        "langchain-core>=0.3,<0.4",
     ],
     extras_require={
         'test': [
@@ -62,6 +66,12 @@ setup(
         ],
         'openai_langchain': [
             "langchain-openai >= 0.3.28",
+        ],
+        'cortex_langchain': [
+            "snowflake-snowpark-python >=1.0.0",
+            "langchain-community >= 0.0.30",
+            "pydantic >=2.6.0, <3.0.0",
+            "langchain-core>=0.3,<0.4",
         ],
         'google': [
             "google-generativeai >= 0.1.0",

@@ -9,23 +9,54 @@ from sfn_llm_client.utils.retry_with import retry_with
 class OpenAILangchainClient(BaseLLMAPIClient):
     def __init__(self, config: LLMAPIClientConfig):
         super().__init__(config)
-        # openai.api_key = self._api_key
-        # self._client = openai
-        # self._client = None
         self.logger, _ = setup_logger(logger_name="OpenAILangchainClient")
-        # self._session = aiohttp.ClientSession()
+        self._client = None # Stores the single ChatOpenAI client instance
+        self._client_params = None # Stores the parameters of the current client
+    
+    def get_or_create_client(self, api_key: str, model: str, temperature: float, max_tokens: int):
+        """
+        Gets the existing ChatOpenAI client or creates a new one if it doesn't exist
+        or if the requested parameters are different from the current client's parameters.
 
-    def _get_or_create_client(self, model: str) -> ChatOpenAI:
-        if self._client is None or self._current_model != model:
-            self._client = ChatOpenAI(
-                api_key=self._api_key,
-                model=model,
-                temperature=0,
-                max_tokens=None,
-                timeout=None
-            )
-            self._current_model = model
-        return self._client
+        Args:
+            api_key (str): The OpenAI API key.
+            model (str): The OpenAI model name (e.g., "gpt-3.5-turbo").
+            temperature (float): The sampling temperature.
+            max_tokens (int): The maximum number of tokens to generate.
+
+        Returns:
+            ChatOpenAI: An instance of the ChatOpenAI client.
+        """
+        requested_params = (api_key, model, temperature, max_tokens)
+
+        # Check if a client already exists and if its parameters match the requested ones.
+        if self._client and self._client_params == requested_params:
+            print(f"Reusing existing client with parameters: {requested_params}")
+            return self._client
+        else:
+            # If no client exists, or if parameters are different, create a new one.
+            print(f"Creating new client for parameters: {requested_params}")
+            try:
+                # temperature not supported in following models
+                if model in ("o1-mini", "o1-pro", "o3", "o4-mini", "o3-mini"):
+                    client = ChatOpenAI(
+                    api_key=api_key,
+                    model=model,
+                    max_tokens=max_tokens
+                    )
+                else:
+                    client = ChatOpenAI(
+                        api_key=api_key,
+                        model=model,
+                        temperature=temperature,
+                        max_tokens=max_tokens
+                    )
+                self._client = client
+                self._client_params = requested_params
+                return self._client
+            except Exception as e:
+                print(f"Error creating ChatOpenAI client: {e}")
+                raise
 
     @retry_with(retries=3, retry_delay=3.0, backoff=True)
     def chat_completion(self, messages: list[ChatMessage], temperature: float = 0,
@@ -43,16 +74,9 @@ class OpenAILangchainClient(BaseLLMAPIClient):
             message if isinstance(message, dict) else message.to_dict() 
             for message in messages
         ]
-        # TODO: create client if param different
-        # self._get_or_create_client(model)
-        client = ChatOpenAI(
-            api_key=self._api_key,
-            model=model,
-            temperature=temperature,
-            max_tokens=max_tokens
-        )
+        self.get_or_create_client(api_key=self._api_key, model=model, temperature=temperature, max_tokens=max_tokens)
         
-        completions = client.invoke(messages)
+        completions = self._client.invoke(messages)
         print("completions:" , completions)
 
         # Check if response is empty
