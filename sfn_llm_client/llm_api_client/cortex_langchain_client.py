@@ -121,3 +121,17 @@ class CortexLangchainClient():
         cleaned_prompt = raw_prompt.rstrip("\n").splitlines()
         cleaned_prompt = " ".join(cleaned_prompt).replace("'", " ").replace('"', " ")
         return cleaned_prompt
+
+    def get_langchain_llm(self, model="snowflake-arctic", temperature=0, max_tokens=16, top_p=1, session=None):
+        """
+        Returns a CustomChatSnowflakeCortex instance for agentic workflows.
+        """
+        return CustomChatSnowflakeCortex(
+            model=model,
+            cortex_function="try_complete",
+            temperature=temperature,
+            max_tokens=max_tokens,
+            top_p=top_p,
+            session=session,
+            snowflake_username="oauth_user",
+        )

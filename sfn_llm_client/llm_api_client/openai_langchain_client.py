@@ -57,6 +57,16 @@ class OpenAILangchainClient(BaseLLMAPIClient):
             except Exception as e:
                 print(f"Error creating ChatOpenAI client: {e}")
                 raise
+    # TODO: try if get_or_create_client can be used instead of get_langchain_llm
+    def get_langchain_llm(self, api_key=None, model=None, temperature=None, max_tokens=None):
+        """
+        Returns the underlying ChatOpenAI client, creating it if necessary.
+        """
+        api_key = api_key or self._api_key
+        model = model or self._default_model
+        temperature = temperature if temperature is not None else 0
+        max_tokens = max_tokens if max_tokens is not None else 16
+        return self.get_or_create_client(api_key=api_key, model=model, temperature=temperature, max_tokens=max_tokens)
 
     @retry_with(retries=3, retry_delay=3.0, backoff=True)
     def chat_completion(self, messages: list[ChatMessage], temperature: float = 0,
