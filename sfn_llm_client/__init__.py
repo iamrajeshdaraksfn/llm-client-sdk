@@ -60,3 +60,10 @@ try:
     from .sync.sync_llm_api_client_factory import init_sync_llm_api_client
 except ImportError:
     pass
+
+
+# sfn_llm_client/__init__.py (NEW AND IMPROVED)
+
+# Just import directly. If it fails, we want to see the error.
+from .llm_api_client.sfn_langgraph.client import ModelLoader
+from .llm_api_client.sfn_langgraph.model_schema import ModelConfiguration, ModelConfig
