@@ -39,6 +39,7 @@ setup(
         "langchain-community >= 0.0.30",
         "pydantic >=2.6.0, <3.0.0",
         "langchain-core>=0.3,<0.4",
+        "StrEnum>=0.4.15"
     ],
     extras_require={
         'test': [
