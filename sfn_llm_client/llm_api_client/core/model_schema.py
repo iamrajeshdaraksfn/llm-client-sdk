@@ -3,10 +3,6 @@ from strenum import StrEnum
 from typing import Optional, Any, List
 from pydantic import BaseModel, Field, ConfigDict, field_validator, model_validator
 
-try:
-    from snowflake.snowpark.session import Session
-except ImportError:
-    Session = Any 
 
 class Provider(StrEnum):
     OPENAI = "openai"
@@ -22,10 +18,10 @@ class OpenAIModelName(StrEnum):
     O3 = "o3"
     O1_MINI = "o1-mini"
     O1 = "o1"
-    # GPT_4_1_NANO = "gpt-4-1-nano"
+    GPT_4_1_NANO = "gpt-4-1-nano"
 
 class SnowflakeModelName(StrEnum):
-    SNOWFLAKE_ARCTIC = "snowflake-no-model"
+    SNOWFLAKE_ARCTIC = "snowflake-arctic"
 
 class FakeModelName(StrEnum):
     FAKE = "fake"
@@ -36,20 +32,20 @@ MODEL_COST_PER_1M_TOKENS = {
         "gpt-4o": {"input_cost": 5.00, "output_cost": 15.00},
         "gpt-4-turbo": {"input_cost": 10.00, "output_cost": 30.00},
         "gpt-4": {"input_cost": 30.00, "output_cost": 60.00},
-        # "gpt-4-1-nano": {"input_cost": 0.10, "output_cost": 0.40},
+        "gpt-4-1-nano": {"input_cost": 0.10, "output_cost": 0.40},
         "o3-mini": {"input_cost": 1.00, "output_cost": 4.00},
         "o3": {"input_cost": 2.00, "output_cost": 8.00},     
         "o1-mini": {"input_cost": 3.00, "output_cost": 12.00},
         "o1": {"input_cost": 15.00, "output_cost": 60.00},
     },
     Provider.SNOWFLAKE.value: {
-        "snowflake-no-model": {"cost": 0.84},
+        "snowflake-arctic": {"cost": 0.84},
     },
 }
 
 PROVIDER_TO_BASE_CLASS = {
     Provider.OPENAI: "ChatOpenAI",
-    Provider.SNOWFLAKE: "ChatSnowflakeCortex",
+    Provider.SNOWFLAKE: "CustomChatSnowflakeCortex",
     Provider.FAKE: "FakeToolModel",
 }
 
@@ -69,8 +65,8 @@ class LLMConfig(BaseModel):
         description='Optional fallback model in "provider/model" format to use if the main model fails.',
     )
 
-    temperature: Optional[float] = Field(
-        default=None, ge=0.0, le=2.0, description="Controls randomness in generation."
+    temperature: float = Field(
+        default=0.0, ge=0.0, le=2.0, description="Controls randomness in generation."
     )
     top_p: Optional[float] = Field(
         default=None, ge=0.0, le=1.0, description="Nucleus sampling parameter."
@@ -91,13 +87,9 @@ class LLMConfig(BaseModel):
         default=None, description="A list of canned responses for the fake model."
     )
 
-    session: Optional[Session] = Field(
-        default=None,
-        description="Snowpark session object required for Snowflake models.",
-        exclude=True,
-    )
     logger: logging.Logger = Field(
-        ..., description="A logging instance for outputting information."
+        default_factory=lambda: logging.getLogger(__name__),
+        description="A logging instance for outputting information."
     )
 
     model_config = ConfigDict(extra="forbid", arbitrary_types_allowed=True)
@@ -126,21 +118,3 @@ class LLMConfig(BaseModel):
             )
         return v
 
-    @model_validator(mode="after")
-    def _validate_provider_dependencies(self) -> "LLMConfig":
-        is_snowflake_primary = self.model_name.startswith(f"{Provider.SNOWFLAKE.value}/")
-        is_snowflake_fallback = self.fall_back_model and self.fall_back_model.startswith(
-            f"{Provider.SNOWFLAKE.value}/"
-        )
-
-        if is_snowflake_primary or is_snowflake_fallback:
-            if not self.session:
-                raise ValueError(
-                    "A valid Snowpark 'session' is required when using a Snowflake model."
-                )
-            if Session is not Any and not isinstance(self.session, Session):
-                raise TypeError(
-                    "The 'session' object must be of type snowflake.snowpark.Session, "
-                    f"not {type(self.session).__name__}"
-                )
-        return self

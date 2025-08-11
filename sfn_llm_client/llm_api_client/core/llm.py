@@ -12,21 +12,9 @@ except ImportError:
     ChatOpenAI = None
 
 try:
-    from langchain_community.chat_models import ChatSnowflakeCortex
-    class CustomChatSnowflakeCortex(ChatSnowflakeCortex):
-        @model_validator(mode="before")
-        def validate_environment(cls, values: Dict) -> Dict:
-            print("Executing custom override of validate_environment.")
-            session = values.get("session")
-            if session:
-                print(f"DEBUG: Existing Snowpark session of type {type(session)} found. Using it directly.")
-                return values
-
-            print("DEBUG: No pre-configured session found. Deferring to parent validation logic.")
-            return values
-
+    
+    from sfn_llm_client.llm_api_client.core.custom_snowflake import CustomChatSnowflakeCortex
 except ImportError:
-    ChatSnowflakeCortex = None
     CustomChatSnowflakeCortex = None 
 
 class FakeToolModel(FakeListChatModel):
@@ -66,8 +54,6 @@ def _create_single_model(config: LLMConfig) -> BaseChatModel:
                 temperature=config.temperature,
                 top_p=config.top_p,
                 cortex_function=config.cortex_function,
-                session=config.session,
-                snowflake_username="oauth_user"
             )
 
     elif provider == Provider.FAKE.value:
@@ -97,12 +83,11 @@ def get_model( config: LLMConfig) -> BaseChatModel:
     fallback_config = LLMConfig(
         model_name=config.fall_back_model,
         fall_back_model=config.fall_back_model, 
-        temperature=None,
-        top_p=None,
+        temperature=config.temperature,
+        top_p=config.top_p,
         max_retries=2,
-        api_timeout=None,
+        api_timeout=config.api_timeout,
         logger=config.logger,
-        session=config.session 
     )
     fallback_llm = _create_single_model(fallback_config)
     return primary_llm.with_fallbacks([fallback_llm])
