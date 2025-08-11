@@ -10,7 +10,7 @@ from sfn_llm_client.llm_cost_calculation.openai_cost_calculation import openai_c
 # import aiohttp
 from sfn_llm_client.utils.logging import setup_logger
 from sfn_llm_client.utils.retry_with import retry_with
-
+from pydantic import BaseModel
 
 INPUT_KEY = "input"
 MODEL_NAME_TO_TOKENS_PER_MESSAGE_AND_TOKENS_PER_NAME = {
