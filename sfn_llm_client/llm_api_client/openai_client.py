@@ -1,6 +1,6 @@
 import time
 from functools import lru_cache
-from typing import Optional
+from typing import Optional,Type
 import openai
 import tiktoken
 from tiktoken import Encoding
@@ -10,6 +10,7 @@ from sfn_llm_client.llm_cost_calculation.openai_cost_calculation import openai_c
 # import aiohttp
 from sfn_llm_client.utils.logging import setup_logger
 from sfn_llm_client.utils.retry_with import retry_with
+
 
 INPUT_KEY = "input"
 MODEL_NAME_TO_TOKENS_PER_MESSAGE_AND_TOKENS_PER_NAME = {
@@ -48,7 +49,7 @@ class OpenAIClient(BaseLLMAPIClient):
     @retry_with(retries=3, retry_delay=3.0, backoff=True)
     def chat_completion(self, messages: list[ChatMessage], temperature: float = 0,
                         max_tokens: int = 16, top_p: float = 1, model: Optional[str] = None, 
-                        retries: int = 3, retry_delay: float = 3.0, **kwargs) -> list[str]:
+                        retries: int = 3, retry_delay: float = 3.0, text_format=None, **kwargs) -> list[str]:
         """
         This method performs chat completion with OpenAI, and includes basic retry logic for handling
         exceptions or empty responses.
@@ -61,22 +62,44 @@ class OpenAIClient(BaseLLMAPIClient):
             message if isinstance(message, dict) else message.to_dict() 
             for message in messages
         ]
-        completions = self._client.chat.completions.create(
-            model=model,
-            messages=messages,
-            temperature=temperature,
-            max_tokens=max_tokens
-        )
-        # Check if response is empty
-        if not completions or not completions.choices:
-            raise ValueError("Received empty response from the openai llm")
+        
+        if text_format:
+            completions = self._client.responses.parse(
+                model=model,
+                input=messages,
+                temperature=temperature,
+                max_output_tokens=max_tokens,
+                text_format=text_format
+            )
+            if not completions.output or completions.output[0].status != "completed":
+                raise ValueError("Received empty response from the openai llm")
+            
+            token_cost_summary = openai_cost_calculation(
+                completions.usage.input_tokens,
+                completions.usage.output_tokens,
+                model=model,
+            )
+            return completions.output_parsed, token_cost_summary
+        
+        else:
+        
+        
+            completions = self._client.chat.completions.create(
+                model=model,
+                messages=messages,
+                temperature=temperature,
+                max_tokens=max_tokens
+            )
+            # Check if response is empty
+            if not completions or not completions.choices:
+                raise ValueError("Received empty response from the openai llm")
 
-        token_cost_summary = openai_cost_calculation(
-            completions.usage.prompt_tokens,
-            completions.usage.completion_tokens,
-            model=model,
-        )
-        return completions, token_cost_summary
+            token_cost_summary = openai_cost_calculation(
+                completions.usage.prompt_tokens,
+                completions.usage.completion_tokens,
+                model=model,
+            )
+            return completions, token_cost_summary
 
 
     async def embedding(self, text: str, model: Optional[str] = None, **kwargs) -> list[float]:
