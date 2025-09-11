@@ -49,6 +49,9 @@ class CostCallbackHandler(BaseCallbackHandler):
         )
         model_id = serialized.get("kwargs", {}).get("model_name")
 
+        if model_provider == Provider.SNOWFLAKE:
+            model_id = kwargs.get("metadata", {}).get("ls_model_name", None)            
+
         if not model_provider or not model_id:
             self.logger.warning(
                 f"Could not determine provider or model for run {run_id}. "
@@ -71,15 +74,24 @@ class CostCallbackHandler(BaseCallbackHandler):
             if self.logger.isEnabledFor(logging.DEBUG):
                 self.logger.debug(f"No start information for run {run_id}. This is normal for fake models.")
             return
+        
+        provider: Provider = run_info["provider"]
+        model_name: str = run_info["model_name"]
+        
+        if provider == Provider.SNOWFLAKE:
+            generations = getattr(response, 'generations', [])
+            generation = (generations[0] if generations else [{}])[0]
+            message = getattr(generation, 'message', None)
+            token_usage = getattr(message, 'response_metadata', {}) 
 
-        llm_output = response.llm_output or {}
-        token_usage = llm_output.get("token_usage")
+        else:
+            llm_output = response.llm_output or {}
+            token_usage = llm_output.get("token_usage")
+
         if not token_usage:
             self.logger.warning(f"No token_usage information in LLM output for run {run_id}. Cost cannot be calculated.")
             return
 
-        provider: Provider = run_info["provider"]
-        model_name: str = run_info["model_name"]
         
         prompt_tokens = token_usage.get("prompt_tokens", 0)
         completion_tokens = token_usage.get("completion_tokens", 0)

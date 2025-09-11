@@ -64,7 +64,7 @@ except ImportError:
 
 
 try:
-    from .llm_api_client.core.llm import get_model
+    from .llm_api_client.core.llm import load_model
     from .llm_api_client.core.model_schema import  LLMConfig
     from .llm_cost_calculation.cost_tracker import CostCallbackHandler
 except ImportError:
