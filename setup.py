@@ -6,7 +6,7 @@ with open("README.md", "r", encoding="utf-8") as fh:
 
 setup(
     name="sfn_llm_client",
-    version="0.1.2",  # You can dynamically fetch the version if needed
+    # version="0.1.2",  # You can dynamically fetch the version if needed
     description="SDK for using LLM clients",
     long_description=long_description,  # Using README.md as long description
     long_description_content_type="text/markdown",  # README file format
@@ -39,7 +39,7 @@ setup(
         "langchain-community >= 0.0.30",
         "pydantic >=2.6.0, <3.0.0",
         "langchain-core>=0.3,<0.4",
-        "StrEnum>=0.4.15"
+        "StrEnum>=0.4.14"
     ],
     extras_require={
         'test': [

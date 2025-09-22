@@ -1,3 +1,7 @@
+
+__version__ = "0.2.0a1"  
+
+
 # load utils
 try:
     from .utils.base_llm_client import BaseLLMClient
