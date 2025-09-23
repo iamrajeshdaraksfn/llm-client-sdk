@@ -46,26 +46,20 @@ class OpenAIClient(BaseLLMAPIClient):
         return [choice.text for choice in completions.choices]
 
     @retry_with(retries=3, retry_delay=3.0, backoff=True)
-    def chat_completion(self, messages: list[ChatMessage], temperature: float = 0,
-                        max_tokens: int = 16, top_p: float = 1, model: Optional[str] = None, 
-                        retries: int = 3, retry_delay: float = 3.0, **kwargs) -> list[str]:
+    def chat_completion(self, messages: list[ChatMessage], **kwargs) -> list[str]:
         """
         This method performs chat completion with OpenAI, and includes basic retry logic for handling
         exceptions or empty responses.
-
-        :param retries: Number of retries in case of failure.
-        :param retry_delay: Delay in seconds between retries.
         """
-        self._set_model_in_kwargs(kwargs, model)
+        self._set_model_in_kwargs(kwargs, kwargs["model"])
         messages = [
             message if isinstance(message, dict) else message.to_dict() 
             for message in messages
         ]
+
         completions = self._client.chat.completions.create(
-            model=model,
             messages=messages,
-            temperature=temperature,
-            max_tokens=max_tokens
+            **kwargs
         )
         # Check if response is empty
         if not completions or not completions.choices:
@@ -74,7 +68,7 @@ class OpenAIClient(BaseLLMAPIClient):
         token_cost_summary = openai_cost_calculation(
             completions.usage.prompt_tokens,
             completions.usage.completion_tokens,
-            model=model,
+            model=kwargs["model"],
         )
         return completions, token_cost_summary
 
