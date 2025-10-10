@@ -1,6 +1,6 @@
 import json
 # import re
-from snowflake.cortex import Complete
+from sfn_llm_client.llm_api_client.snowflake_cortex_complete_extended import complete, CompleteOptions
 from typing import Optional
 from sfn_llm_client.llm_api_client.base_llm_api_client import (
     BaseLLMAPIClient,
@@ -18,25 +18,22 @@ class CortexClient(BaseLLMAPIClient):
     def chat_completion(
         self,
         messages: list[ChatMessage],
+        model: Optional[str] = "claude-4-sonnet",
         temperature: float = 0,
-        max_tokens: int = 16,
-        top_p: float = 1,
-        model: Optional[str] = "snowflake-arctic",
-        retries: int = 3,
-        retry_delay: float = 3.0,
+        max_tokens: int = 1024,
+        top_p: float = 0,
         session: Optional[Session] = None,
         **kwargs,
     ) -> list[str]:
         self.logger.info('Started calling Cortex Complete API...')
 
-        completions = Complete(
-            model,
-            prompt=messages,
-            options={"max_tokens": max_tokens, "temperature": temperature, "guardrails": False},
-            session=session,
-        )
-
+        options = {k: v for k, v in {"temperature": temperature, "max_tokens": max_tokens,"top_p": top_p}.items() if v}
+        if text_format := kwargs.get("text_format"): options["response_format"] = {"type": "json", "schema": text_format.model_json_schema()}
+        if guardrails := kwargs.get("guardrails"): options["guardrails"] = guardrails
+        completions, token_count = complete(model, prompt=messages, options=options, session=session)
         self.logger.info(f"Received cortex {model}, Completions response...{completions}")
+
+        if text_format: completions = text_format.model_validate_json(completions)
         
         # response_content = response['choices'][0]['messages']
         # pattern = re.compile(r'\{.*"text_response".*"mapping".*\}', re.DOTALL)
@@ -53,7 +50,7 @@ class CortexClient(BaseLLMAPIClient):
         # Calculate token consumption
 
         token_cost_summary = snowflake_cortex_cost_calculation(
-            response=completions,
+            response=token_count,
             model=model
         )
         self.logger.info(f"After consumed token's cost calculation received token_cost_summary...{token_cost_summary}")

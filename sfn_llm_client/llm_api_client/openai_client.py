@@ -56,18 +56,16 @@ class OpenAIClient(BaseLLMAPIClient):
             message if isinstance(message, dict) else message.to_dict() 
             for message in messages
         ]
+        if mt := kwargs.pop("max_tokens", None): kwargs["max_output_tokens"] = mt
 
-        completions = self._client.chat.completions.create(
-            messages=messages,
+        completions = self._client.responses.parse(
+            input=messages,
             **kwargs
         )
-        # Check if response is empty
-        if not completions or not completions.choices:
-            raise ValueError("Received empty response from the openai llm")
 
         token_cost_summary = openai_cost_calculation(
-            completions.usage.prompt_tokens,
-            completions.usage.completion_tokens,
+            completions.usage.input_tokens,
+            completions.usage.output_tokens,
             model=kwargs["model"],
         )
         return completions, token_cost_summary

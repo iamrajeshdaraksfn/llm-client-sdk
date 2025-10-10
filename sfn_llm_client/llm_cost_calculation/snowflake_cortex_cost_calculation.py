@@ -11,19 +11,22 @@ def snowflake_cortex_cost_calculation(response: dict, model: str) -> tuple:
     """Calculate the cost for consumed tokens for cortex llm."""
     # In Cortex prompt and completions both tokens has same cost/credits
     # So keeping the sum as total of tokens to calculate dollar bill
-    response = json.loads(response)
     # Check if response is empty
-    if not response or not response['choices']:
-        raise ValueError("Received empty response from the openai llm")
-
-    # Ensure model is supported
-    if model not in CORTEX_MODEL_TOKENS_COST:
-        raise ValueError(f"Unsupported model: {model}")
 
     # Extract token usage from response
-    prompt_tokens = response['usage']['prompt_tokens']
-    completion_tokens = response['usage']['completion_tokens']
-    guardrails_tokens = response['usage'].get('guardrails_tokens', 0)  # Handle missing guardrails_tokens
+    prompt_tokens = response.get('prompt_tokens', 0)
+    completion_tokens = response.get('completion_tokens', 0)
+    guardrails_tokens = response.get('guardrails_tokens', 0)  # Handle missing guardrails_tokens
+    # Ensure model is supported
+    if model not in CORTEX_MODEL_TOKENS_COST:
+        return {
+            "prompt_tokens": prompt_tokens,
+            "completion_tokens": completion_tokens,
+            "guardrails_tokens": guardrails_tokens,
+            "total_tokens": prompt_tokens + completion_tokens + guardrails_tokens,
+            "total_cost_in_credits": 0,
+        }
+
     
     # Calculate total tokens and cost
     total_tokens = prompt_tokens + completion_tokens + guardrails_tokens
