@@ -132,6 +132,26 @@ OPENAI_MODEL_TOKENS_COST = {
             "prompt": 0.003,
             "completion": 0.012
         },
+        "gpt-5": {
+            "prompt": 1.25 / 1000,       # ~$0.00125 per 1 k tokens
+            "cached_prompt": 0.125 / 1000,  # ~$0.000125 per 1 k
+            "completion": 10.00 / 1000,    # ~$0.01000 per 1 k tokens
+            },
+        "gpt-5-mini": {
+            "prompt": 0.25 / 1000,        # ~$0.00025 per 1 k
+            "cached_prompt": 0.025 / 1000,# ~$0.000025 per 1 k
+            "completion": 2.00 / 1000,    # ~$0.00200 per 1 k
+        },
+        "gpt-5-nano": {
+            "prompt": 0.05 / 1000,        # ~$0.00005 per 1 k
+            "cached_prompt": 0.005 / 1000,# ~$0.000005 per 1 k
+            "completion": 0.40 / 1000,    # ~$0.00040 per 1 k
+        },
+        "gpt-5-pro": {
+            "prompt": 15.00 / 1000,       # ~$0.01500 per 1 k
+            "completion": 120.00 / 1000,  # ~$0.12000 per 1 k
+            # Note: cached input not listed
+        },
     }
 
 # cost token per million

@@ -65,7 +65,7 @@ class OpenAIClient(BaseLLMAPIClient):
 
         token_cost_summary = openai_cost_calculation(
             completions.usage.input_tokens,
-            completions.usage.output_tokens,
+            completions.usage.output_tokens + completions.usage.output_tokens_details.reasoning_tokens,
             model=kwargs["model"],
         )
         return completions, token_cost_summary

@@ -40,7 +40,7 @@ def openai_cost_calculation(
             "prompt_tokens": total_prompt_tokens,
             "completion_tokens": total_completion_tokens,
             "total_tokens": total_tokens,
-            "total_cost_usd": round(total_cost_usd, 4),
+            "total_cost_usd": round(total_cost_usd, 6),
         }
         logger.info(f'openai cost calculation done! total cost is: {token_cost_summary}')
         logger.info(f'\n Please note: The costs listed were determined as of June 24, 2025. Prices are subject to change, so for accurate and real-time cost information, please visit the OpenAI pricing page: https://platform.openai.com/docs/pricing')
