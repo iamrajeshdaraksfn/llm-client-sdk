@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "sfn_llm_client"
-version = "0.3.3"
+version = "0.3.4"
 description = "SDK for using LLM"
 readme = "README.md"
 requires-python = ">=3.9"
