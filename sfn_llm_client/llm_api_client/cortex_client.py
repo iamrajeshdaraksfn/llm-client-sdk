@@ -49,10 +49,12 @@ class CortexClient(BaseLLMAPIClient):
 
         # Calculate token consumption
 
-        token_cost_summary = snowflake_cortex_cost_calculation(
-            response=token_count,
-            model=model
-        )
+        # token_cost_summary = snowflake_cortex_cost_calculation(
+        #     response=token_count,
+        #     model=model
+        # )
+        # cortex does not provide usage data
+        token_cost_summary = {}
         self.logger.info(f"After consumed token's cost calculation received token_cost_summary...{token_cost_summary}")
 
         return completions, token_cost_summary
